@@ -10,6 +10,7 @@ import {
   TextInput,
   PasswordInput,
   Button,
+  Anchor,
 } from "@mantine/core";
 
 export default function Login() {
@@ -34,7 +35,7 @@ export default function Login() {
               Welcome back!
             </Title>
             <Text size={"2rem"} c={"white"}>
-              Time to get back to the grained.
+              Time to get back to the grind.
             </Text>
           </Stack>
         </GridCol>
@@ -59,6 +60,9 @@ export default function Login() {
               </Stack>
 
               <Group justify="flex-end" mt={"md"}>
+                <Button variant="transparent" color="green.8" size="lg">
+                  Sign Up
+                </Button>
                 <Button color="green.8" size="lg">
                   Login
                 </Button>
