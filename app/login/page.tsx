@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Group,
   Title,
@@ -12,6 +14,7 @@ import {
   Button,
   Anchor,
 } from "@mantine/core";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const xray = {
@@ -19,6 +22,8 @@ export default function Login() {
       outline: "2px solid blue",
     },
   };
+
+  const router = useRouter();
 
   return (
     <>
@@ -60,7 +65,12 @@ export default function Login() {
               </Stack>
 
               <Group justify="flex-end" mt={"md"}>
-                <Button variant="transparent" color="green.8" size="lg">
+                <Button
+                  onClick={() => router.push("/getStarted")}
+                  variant="transparent"
+                  color="green.8"
+                  size="lg"
+                >
                   Sign Up
                 </Button>
                 <Button color="green.8" size="lg">
