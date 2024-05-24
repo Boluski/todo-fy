@@ -161,7 +161,11 @@ export default function GetStarted() {
                   />
                 </Stack>
 
-                <Button color="green.8" size="lg">
+                <Button
+                  color="green.8"
+                  size="lg"
+                  onClick={() => router.push("/projects")}
+                >
                   Create Project
                 </Button>
               </Stack>

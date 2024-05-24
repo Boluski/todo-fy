@@ -73,7 +73,11 @@ export default function Login() {
                 >
                   Sign Up
                 </Button>
-                <Button color="green.8" size="lg">
+                <Button
+                  color="green.8"
+                  size="lg"
+                  onClick={() => router.push("/dashboard")}
+                >
                   Login
                 </Button>
               </Group>
