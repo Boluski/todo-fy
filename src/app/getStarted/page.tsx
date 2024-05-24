@@ -29,6 +29,22 @@ export default function GetStarted() {
   const nextStep = () => {
     setActive((current) => (current < 3 ? current + 1 : current));
   };
+
+  const [userName, setUserName] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSignUp = () => {
+    console.log(userName);
+    console.log(displayName);
+    console.log(email);
+    console.log(password);
+    console.log(confirmPassword);
+    nextStep();
+  };
+
   return (
     <>
       <Stack h={"100vh"} bg={"green.8"} justify="center" align="center">
@@ -46,6 +62,10 @@ export default function GetStarted() {
                 <Stack gap={0}>
                   <Text size="1.25rem">Username:</Text>
                   <TextInput
+                    value={userName}
+                    onChange={(e) => {
+                      setUserName(e.currentTarget.value);
+                    }}
                     color="green.8"
                     variant="filled"
                     size="md"
@@ -55,6 +75,10 @@ export default function GetStarted() {
                 <Stack gap={0}>
                   <Text size="1.25rem">Display Name:</Text>
                   <TextInput
+                    value={displayName}
+                    onChange={(e) => {
+                      setDisplayName(e.currentTarget.value);
+                    }}
                     color="green.8"
                     variant="filled"
                     size="md"
@@ -64,6 +88,10 @@ export default function GetStarted() {
                 <Stack gap={0}>
                   <Text size="1.25rem">Email Address:</Text>
                   <TextInput
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.currentTarget.value);
+                    }}
                     color="green.8"
                     variant="filled"
                     size="md"
@@ -73,12 +101,28 @@ export default function GetStarted() {
 
                 <Stack gap={0}>
                   <Text size="1.25rem">Password:</Text>
-                  <PasswordInput variant="filled" size="md" mt={"xs"} />
+                  <PasswordInput
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.currentTarget.value);
+                    }}
+                    variant="filled"
+                    size="md"
+                    mt={"xs"}
+                  />
                 </Stack>
 
                 <Stack gap={0}>
-                  <Text size="1.25rem">Password:</Text>
-                  <PasswordInput variant="filled" size="md" mt={"xs"} />
+                  <Text size="1.25rem">Confirm Password:</Text>
+                  <PasswordInput
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.currentTarget.value);
+                    }}
+                    variant="filled"
+                    size="md"
+                    mt={"xs"}
+                  />
                 </Stack>
                 <Group justify="flex-end">
                   <Button
@@ -89,7 +133,7 @@ export default function GetStarted() {
                   >
                     Login
                   </Button>
-                  <Button color="green.8" size="md" onClick={nextStep}>
+                  <Button color="green.8" size="md" onClick={handleSignUp}>
                     Get Started
                   </Button>
                 </Group>
