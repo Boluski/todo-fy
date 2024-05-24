@@ -1,0 +1,25 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-todofy-dev-6fffb-authRole",
+      "UnauthRoleArn": "arn:aws:iam::654654221907:role/amplify-todofy-dev-6fffb-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::654654221907:role/amplify-todofy-dev-6fffb-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-todofy-dev-6fffb-deployment",
+      "UnauthRoleName": "amplify-todofy-dev-6fffb-unauthRole",
+      "StackName": "amplify-todofy-dev-6fffb",
+      "StackId": "arn:aws:cloudformation:us-east-2:654654221907:stack/amplify-todofy-dev-6fffb/fe6fc900-1a1c-11ef-92d0-0af4c5eadabb",
+      "AmplifyAppId": "d23xp5k9zvq0zh"
+    },
+    "categories": {
+      "auth": {
+        "todofy7103900b": {
+          "userPoolId": "us-east-2_oVf2YGGpB",
+          "userPoolName": "TODO-fy",
+          "webClientId": "4ue4tgvsj8a9bp9i250kf0p0t1",
+          "nativeClientId": "4ue4tgvsj8a9bp9i250kf0p0t1"
+        }
+      }
+    }
+  }
+}
