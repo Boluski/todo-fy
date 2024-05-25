@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUp, confirmSignUp } from "aws-amplify/auth";
+import {
+  signUp,
+  confirmSignUp,
+  getCurrentUser,
+  signIn,
+} from "aws-amplify/auth";
 import config from "../../amplifyconfiguration.json";
 import { Amplify } from "aws-amplify";
 import {
@@ -92,6 +97,16 @@ export default function GetStarted() {
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const handleFirstProject = async () => {
+    try {
+      await signIn({ username: userName, password: password });
+    } catch (e) {
+      console.log(e);
+    }
+
+    router.push("/dashboard");
   };
 
   return (
@@ -284,11 +299,7 @@ export default function GetStarted() {
                   />
                 </Stack>
 
-                <Button
-                  color="green.8"
-                  size="lg"
-                  onClick={() => router.push("/projects")}
-                >
+                <Button color="green.8" size="lg" onClick={handleFirstProject}>
                   Create Project
                 </Button>
               </Stack>

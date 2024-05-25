@@ -5,7 +5,8 @@ import "@mantine/core/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
 import { Inter } from "next/font/google";
-
+// import { Amplify } from "aws-amplify";
+// import config from "../amplifyconfiguration.json";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,6 +19,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Amplify.configure(config);
+  // console.log("ran config");
+
   return (
     <html lang="en">
       <head>
