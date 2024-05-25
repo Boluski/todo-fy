@@ -1,6 +1,5 @@
 "use client";
 
-import { Hub } from "aws-amplify/utils";
 import config from "../../amplifyconfiguration.json";
 import { Amplify } from "aws-amplify";
 import { getCurrentUser, fetchUserAttributes, signOut } from "aws-amplify/auth";
@@ -13,20 +12,12 @@ export default function Dashboard() {
 
   const router = useRouter();
 
-  Hub.listen("auth", ({ payload }) => {
-    switch (payload.event) {
-      case "signedIn":
-        console.log("signedIn");
-        break;
-      case "signedOut":
-        console.log("signedOut");
-        router.push("/");
-        break;
-    }
-  });
-
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    handleClick();
+  }, []);
 
   const handleClick = async () => {
     try {
@@ -42,9 +33,6 @@ export default function Dashboard() {
       router.push("/");
     }
   };
-  useEffect(() => {
-    handleClick();
-  }, []);
 
   return (
     <>
@@ -57,6 +45,7 @@ export default function Dashboard() {
           await signOut();
           setUserName("");
           setUserEmail("");
+          router.push("/");
         }}
       >
         Sign Out

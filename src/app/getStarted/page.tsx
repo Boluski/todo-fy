@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   signUp,
@@ -27,6 +27,8 @@ import {
 } from "@mantine/core";
 
 export default function GetStarted() {
+  Amplify.configure(config);
+
   const xray = {
     root: {
       outline: "2px solid blue",
@@ -36,11 +38,6 @@ export default function GetStarted() {
   const router = useRouter();
   const [active, setActive] = useState(0);
   const [theme, setTheme] = useState(DEFAULT_THEME.colors.green[8]);
-  const nextSlide = () => {
-    setActive((current) => (current < 3 ? current + 1 : current));
-  };
-
-  Amplify.configure(config);
 
   const [userName, setUserName] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -49,6 +46,10 @@ export default function GetStarted() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [verificationCode, setVerificationCode] = useState("");
+
+  const nextSlide = () => {
+    setActive((current) => (current < 3 ? current + 1 : current));
+  };
 
   const handleSignUp = async () => {
     console.log(userName);
@@ -108,6 +109,21 @@ export default function GetStarted() {
 
     router.push("/dashboard");
   };
+
+  const isAuth = async () => {
+    try {
+      await getCurrentUser();
+      router.push("/dashboard");
+    } catch (e) {
+      console.log(e);
+
+      console.log("no user");
+    }
+  };
+
+  useEffect(() => {
+    isAuth();
+  }, []);
 
   return (
     <>
