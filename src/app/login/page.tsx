@@ -14,16 +14,50 @@ import {
   Button,
   Anchor,
 } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Amplify } from "aws-amplify";
+import config from "../../amplifyconfiguration.json";
+import { signIn, getCurrentUser } from "aws-amplify/auth";
 
 export default function Login() {
+  Amplify.configure(config);
+
   const xray = {
     root: {
       outline: "2px solid blue",
     },
   };
 
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+
   const router = useRouter();
+
+  const handleClick = async () => {
+    console.log(userName);
+    console.log(password);
+    try {
+      await signIn({
+        username: userName,
+        password: password,
+      });
+      router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const isAuth = async () => {
+    try {
+      await getCurrentUser();
+      router.push("/dashboard");
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    isAuth();
+  }, []);
 
   return (
     <>
@@ -56,12 +90,24 @@ export default function Login() {
                   variant="filled"
                   size="md"
                   mt={"xs"}
+                  value={userName}
+                  onChange={(e) => {
+                    setUserName(e.currentTarget.value);
+                  }}
                 />
               </Stack>
 
               <Stack gap={0}>
                 <Text size="1.25rem">Password:</Text>
-                <PasswordInput variant="filled" size="md" mt={"xs"} />
+                <PasswordInput
+                  variant="filled"
+                  size="md"
+                  mt={"xs"}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.currentTarget.value);
+                  }}
+                />
               </Stack>
 
               <Group justify="flex-end" mt={"md"}>
@@ -73,11 +119,7 @@ export default function Login() {
                 >
                   Sign Up
                 </Button>
-                <Button
-                  color="green.8"
-                  size="lg"
-                  onClick={() => router.push("/dashboard")}
-                >
+                <Button color="green.8" size="lg" onClick={handleClick}>
                   Login
                 </Button>
               </Group>
