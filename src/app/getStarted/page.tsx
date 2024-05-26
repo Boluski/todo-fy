@@ -8,7 +8,7 @@ import {
   getCurrentUser,
   signIn,
 } from "aws-amplify/auth";
-import config from "../../amplifyconfiguration.json";
+import config from "../../aws-exports";
 import { Amplify } from "aws-amplify";
 import {
   Stack,

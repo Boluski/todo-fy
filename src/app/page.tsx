@@ -1,7 +1,7 @@
 "use client";
 import { Input, Stack, Center, Title, Button, Group } from "@mantine/core";
 import { useRouter } from "next/navigation";
-import config from "../amplifyconfiguration.json";
+import config from "../aws-exports";
 import { Amplify } from "aws-amplify";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useEffect } from "react";

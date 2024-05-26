@@ -1,6 +1,6 @@
 "use client";
 
-import config from "../../amplifyconfiguration.json";
+import config from "../../aws-exports";
 import { Amplify } from "aws-amplify";
 import { getCurrentUser, fetchUserAttributes, signOut } from "aws-amplify/auth";
 import { Button } from "@mantine/core";

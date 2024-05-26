@@ -17,7 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Amplify } from "aws-amplify";
-import config from "../../amplifyconfiguration.json";
+import config from "../../aws-exports";
 import { signIn, getCurrentUser } from "aws-amplify/auth";
 
 export default function Login() {
