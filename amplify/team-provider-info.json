@@ -19,6 +19,15 @@
           "webClientId": "4ue4tgvsj8a9bp9i250kf0p0t1",
           "nativeClientId": "4ue4tgvsj8a9bp9i250kf0p0t1"
         }
+      },
+      "function": {
+        "todofyLambda": {
+          "deploymentBucketName": "amplify-todofy-dev-6fffb-deployment",
+          "s3Key": "amplify-builds/todofyLambda-553432516469574d4b6f-build.zip"
+        }
+      },
+      "api": {
+        "todofy": {}
       }
     }
   }

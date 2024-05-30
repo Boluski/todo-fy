@@ -1,4 +1,20 @@
 {
+  "api": {
+    "todofy": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "todofyLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
   "auth": {
     "todofy7103900b": {
       "customAuth": false,
@@ -6,6 +22,13 @@
       "providerPlugin": "awscloudformation",
       "service": "Cognito",
       "serviceType": "imported"
+    }
+  },
+  "function": {
+    "todofyLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "parameters": {
@@ -38,6 +61,22 @@
         {
           "category": "auth",
           "resourceName": "todofy7103900b"
+        }
+      ]
+    },
+    "AMPLIFY_function_todofyLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "todofyLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_todofyLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "todofyLambda"
         }
       ]
     }
