@@ -45,8 +45,20 @@ export default function GetStarted() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [projectTitle, setProjectTitle] = useState("");
 
   const [verificationCode, setVerificationCode] = useState("");
+
+  const themeArray = [
+    DEFAULT_THEME.colors.green[8],
+    DEFAULT_THEME.colors.blue[8],
+    DEFAULT_THEME.colors.red[8],
+    DEFAULT_THEME.colors.violet[8],
+    DEFAULT_THEME.colors.orange[8],
+    DEFAULT_THEME.colors.cyan[8],
+    DEFAULT_THEME.colors.teal[8],
+    DEFAULT_THEME.colors.lime[8],
+  ];
 
   const nextSlide = () => {
     setActive((current) => (current < 3 ? current + 1 : current));
@@ -127,11 +139,17 @@ export default function GetStarted() {
   const handleFirstProject = async () => {
     try {
       await signIn({ username: userName, password: password });
+      const themeID = themeArray.indexOf(theme) + 1;
+      const body = {
+        title: projectTitle,
+        theme: themeID,
+        owner: userName,
+      };
     } catch (e) {
       console.log(e);
     }
 
-    router.push("/dashboard");
+    // router.push("/dashboard");
   };
 
   const isAuth = async () => {
@@ -309,6 +327,10 @@ export default function GetStarted() {
                     variant="filled"
                     size="md"
                     mt={"xs"}
+                    value={projectTitle}
+                    onChange={(e) => {
+                      setProjectTitle(e.currentTarget.value);
+                    }}
                   />
                 </Stack>
 
@@ -326,16 +348,7 @@ export default function GetStarted() {
                     onChange={setTheme}
                     focusable={true}
                     swatchesPerRow={8}
-                    swatches={[
-                      DEFAULT_THEME.colors.green[8],
-                      DEFAULT_THEME.colors.blue[8],
-                      DEFAULT_THEME.colors.red[8],
-                      DEFAULT_THEME.colors.violet[8],
-                      DEFAULT_THEME.colors.orange[8],
-                      DEFAULT_THEME.colors.cyan[8],
-                      DEFAULT_THEME.colors.teal[8],
-                      DEFAULT_THEME.colors.lime[8],
-                    ]}
+                    swatches={themeArray}
                   />
                 </Stack>
 
