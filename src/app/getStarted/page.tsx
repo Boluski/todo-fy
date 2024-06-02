@@ -10,6 +10,7 @@ import {
 } from "aws-amplify/auth";
 import config from "../../aws-exports";
 import { Amplify } from "aws-amplify";
+import { post } from "aws-amplify/api";
 import {
   Stack,
   Stepper,
@@ -26,9 +27,9 @@ import {
   PinInput,
 } from "@mantine/core";
 
-export default function GetStarted() {
-  Amplify.configure(config);
+Amplify.configure(config);
 
+export default function GetStarted() {
   const xray = {
     root: {
       outline: "2px solid blue",
@@ -49,6 +50,28 @@ export default function GetStarted() {
 
   const nextSlide = () => {
     setActive((current) => (current < 3 ? current + 1 : current));
+  };
+
+  const addUser = async () => {
+    try {
+      const restOperation = post({
+        apiName: "todofy",
+        path: "/users",
+        options: {
+          body: {
+            username: userName,
+            email: email,
+            displayName: displayName,
+          },
+        },
+      });
+      const { body } = await restOperation.response;
+
+      const myJSON = await body.json();
+      console.log(myJSON);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSignUp = async () => {
@@ -94,6 +117,7 @@ export default function GetStarted() {
         username: userName,
         confirmationCode: verificationCode,
       });
+      addUser();
       nextSlide();
     } catch (e) {
       console.log(e);

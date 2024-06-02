@@ -7,9 +7,9 @@ import { Button } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Dashboard() {
-  Amplify.configure(config);
+Amplify.configure(config);
 
+export default function Dashboard() {
   const router = useRouter();
 
   const [userName, setUserName] = useState("");

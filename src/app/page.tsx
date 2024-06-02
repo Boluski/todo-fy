@@ -3,13 +3,11 @@ import { Input, Stack, Center, Title, Button, Group } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import config from "../aws-exports";
 import { Amplify } from "aws-amplify";
-import { get } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useEffect } from "react";
 
+Amplify.configure(config);
 export default function Home() {
-  Amplify.configure(config);
-
   const xray = {
     root: {
       outline: "2px solid blue",
@@ -21,34 +19,15 @@ export default function Home() {
   const isAuth = async () => {
     try {
       await getCurrentUser();
-      // router.push("/dashboard");
+      router.push("/dashboard");
     } catch (e) {
       console.log(e);
-
       console.log("no user");
-    }
-  };
-
-  const testApi = async () => {
-    try {
-      const restOparatinon = get({
-        apiName: "todofy",
-        path: "/items",
-      });
-      const { body } = await restOparatinon.response;
-
-      // console.log(res.headers);
-
-      const myJson = await body.json();
-      console.log(myJson);
-    } catch (e) {
-      console.log("Error");
     }
   };
 
   useEffect(() => {
     isAuth();
-    testApi();
   }, []);
 
   return (
