@@ -10,7 +10,7 @@ import {
 } from "aws-amplify/auth";
 import config from "../../aws-exports";
 import { Amplify } from "aws-amplify";
-import { post } from "aws-amplify/api";
+import { post, get } from "aws-amplify/api";
 import {
   Stack,
   Stepper,
@@ -136,6 +136,10 @@ export default function GetStarted() {
     }
   };
 
+  type sqlSchema = {
+    result: { insertId: number };
+  };
+
   const handleFirstProject = async () => {
     try {
       await signIn({ username: userName, password: password });
@@ -155,8 +159,9 @@ export default function GetStarted() {
       });
 
       const { body } = await request.response;
-      const response = await body.json();
-      console.log(response);
+      const response = (await body.json()) as sqlSchema;
+      console.log(response.result.insertId);
+      router.push(`/project/${response.result.insertId}`);
     } catch (e) {
       console.log(e);
     }

@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and limitations 
 // Change Theme to Themes
 
 const express = require("express");
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 
@@ -25,6 +25,13 @@ const mysqlConfig = {
   password: "todofy1234",
   port: "3306",
   database: "todo_fy",
+  waitForConnections: true,
+  connectionLimit: 10,
+  maxIdle: 10,
+  idleTimeout: 60000,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 };
 
 // Enable CORS for all methods
@@ -34,69 +41,129 @@ app.use(function (req, res, next) {
   next();
 });
 
+const connection = mysql.createPool(mysqlConfig);
 /**********************
  * Example get method *
  **********************/
 
 app.get("/TODO-fy/users", function (req, res) {
-  const connection = mysql.createConnection(mysqlConfig);
-
-  connection.connect((error) => {
+  connection.execute("SELECT * from Users", function (error, result, fields) {
     if (error) {
-      res.json({ errorMes: "connection failed" });
+      res.json({ error: error });
     } else {
-      connection.query("SELECT * from Users", function (error, result, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else {
-          res.json({ result: result, fields: fields });
-        }
-      });
+      res.json({ result: result, fields: fields });
     }
   });
+
+  // connection.connect((error) => {
+  //   if (error) {
+  //     res.json({ errorMes: "connection failed" });
+  //   } else {
+  //     connection.query("SELECT * from Users", function (error, result, fields) {
+  //       if (error) {
+  //         res.json({ error: error });
+  //       } else {
+  //         res.json({ result: result, fields: fields });
+  //       }
+  //     });
+  //   }
+  // });
+});
+
+app.get("/TODO-fy/getFirstProjectID", function (req, res) {
+  connection.execute(
+    "SELECT PID from Projects WHERE owner = ? LIMIT 1;",
+    [req.body.owner],
+    function (error, result, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else {
+        res.json({ result: result, fields: fields });
+      }
+    }
+  );
+
+  // connection.connect((error) => {
+  //   if (error) {
+  //     res.json({ error: error });
+  //   } else {
+  //     connection.query(
+  //       "SELECT PID from Projects WHERE owner = ? LIMIT 1;",
+  //       [req.body.owner],
+  //       function (error, result, fields) {
+  //         if (error) {
+  //           res.json({ error: error });
+  //         } else {
+  //           res.json({ result: result, fields: fields });
+  //         }
+  //       }
+  //     );
+  //   }
+  // });
 });
 
 app.post("/TODO-fy/addUser", function (req, res) {
-  // Add your code here
-  const connection = mysql.createConnection(mysqlConfig);
-  connection.connect((error) => {
-    if (error) {
-      res.json({ error: error });
-    } else {
-      connection.query(
-        "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
-        [req.body.username, req.body.email, req.body.displayName],
-        function (error, result, fields) {
-          if (error) {
-            res.json({ error: error });
-          } else {
-            res.json({ result: result, fields: fields });
-          }
-        }
-      );
+  connection.execute(
+    "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
+    [req.body.username, req.body.email, req.body.displayName],
+    function (error, result, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else {
+        res.json({ result: result, fields: fields });
+      }
     }
-  });
+  );
+
+  // connection.connect((error) => {
+  //   if (error) {
+  //     res.json({ error: error });
+  //   } else {
+  //     connection.query(
+  //       "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
+  //       [req.body.username, req.body.email, req.body.displayName],
+  //       function (error, result, fields) {
+  //         if (error) {
+  //           res.json({ error: error });
+  //         } else {
+  //           res.json({ result: result, fields: fields });
+  //         }
+  //       }
+  //     );
+  //   }
+  // });
 });
 
 app.post("/TODO-fy/addProject", function (req, res) {
-  const connection = mysql.createConnection(mysqlConfig);
-  connection.connect((error) => {
-    if (error) {
-      res.json({ error: error });
-    } else {
-      connection.query(
-        "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
-        [req.body.title, req.body.theme, req.body.owner],
-        function (error, result, fields) {
-          if (error) {
-            res.json({ error: error });
-          } else {
-            res.json({ result: result, fields: fields });
-          }
-        }
-      );
+  connection.execute(
+    "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
+    [req.body.title, req.body.theme, req.body.owner],
+    function (error, result, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else {
+        res.json({ result: result, fields: fields });
+      }
     }
-  });
+  );
+  // const connection = mysql.createConnection(mysqlConfig);
+  // connection.connect((error) => {
+  //   if (error) {
+  //     res.json({ error: error });
+  //   } else {
+  //     connection.query(
+  //       "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
+  //       [req.body.title, req.body.theme, req.body.owner],
+  //       function (error, result, fields) {
+  //         if (error) {
+  //           res.json({ error: error });
+  //         } else {
+  //           res.json({ result: result, fields: fields });
+  //         }
+  //       }
+  //     );
+  //   }
+  // });
 });
 
 // app.get("/users/*", function (req, res) {
