@@ -165,8 +165,6 @@ export default function GetStarted() {
     } catch (e) {
       console.log(e);
     }
-
-    // router.push("/dashboard");
   };
 
   const isAuth = async () => {

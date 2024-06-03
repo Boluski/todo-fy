@@ -54,52 +54,25 @@ app.get("/TODO-fy/users", function (req, res) {
       res.json({ result: result, fields: fields });
     }
   });
-
-  // connection.connect((error) => {
-  //   if (error) {
-  //     res.json({ errorMes: "connection failed" });
-  //   } else {
-  //     connection.query("SELECT * from Users", function (error, result, fields) {
-  //       if (error) {
-  //         res.json({ error: error });
-  //       } else {
-  //         res.json({ result: result, fields: fields });
-  //       }
-  //     });
-  //   }
-  // });
 });
 
-app.get("/TODO-fy/getFirstProjectID", function (req, res) {
+app.get("/TODO-fy/getProject", function (req, res) {
   connection.execute(
-    "SELECT PID from Projects WHERE owner = ? LIMIT 1;",
-    [req.body.owner],
+    "SELECT * from Projects WHERE PID = ?",
+    [Number(req.query.PID)],
     function (error, result, fields) {
       if (error) {
-        res.json({ error: error });
+        res.json({ isError: true, errorMes: error.message });
       } else {
-        res.json({ result: result, fields: fields });
+        res.json({
+          isError: false,
+          errorMes: "",
+          result: result,
+          fields: fields,
+        });
       }
     }
   );
-
-  // connection.connect((error) => {
-  //   if (error) {
-  //     res.json({ error: error });
-  //   } else {
-  //     connection.query(
-  //       "SELECT PID from Projects WHERE owner = ? LIMIT 1;",
-  //       [req.body.owner],
-  //       function (error, result, fields) {
-  //         if (error) {
-  //           res.json({ error: error });
-  //         } else {
-  //           res.json({ result: result, fields: fields });
-  //         }
-  //       }
-  //     );
-  //   }
-  // });
 });
 
 app.post("/TODO-fy/addUser", function (req, res) {
@@ -114,24 +87,6 @@ app.post("/TODO-fy/addUser", function (req, res) {
       }
     }
   );
-
-  // connection.connect((error) => {
-  //   if (error) {
-  //     res.json({ error: error });
-  //   } else {
-  //     connection.query(
-  //       "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
-  //       [req.body.username, req.body.email, req.body.displayName],
-  //       function (error, result, fields) {
-  //         if (error) {
-  //           res.json({ error: error });
-  //         } else {
-  //           res.json({ result: result, fields: fields });
-  //         }
-  //       }
-  //     );
-  //   }
-  // });
 });
 
 app.post("/TODO-fy/addProject", function (req, res) {
@@ -146,24 +101,6 @@ app.post("/TODO-fy/addProject", function (req, res) {
       }
     }
   );
-  // const connection = mysql.createConnection(mysqlConfig);
-  // connection.connect((error) => {
-  //   if (error) {
-  //     res.json({ error: error });
-  //   } else {
-  //     connection.query(
-  //       "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
-  //       [req.body.title, req.body.theme, req.body.owner],
-  //       function (error, result, fields) {
-  //         if (error) {
-  //           res.json({ error: error });
-  //         } else {
-  //           res.json({ result: result, fields: fields });
-  //         }
-  //       }
-  //     );
-  //   }
-  // });
 });
 
 // app.get("/users/*", function (req, res) {
