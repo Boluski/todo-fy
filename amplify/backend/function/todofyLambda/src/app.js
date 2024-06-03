@@ -6,6 +6,9 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
+//TODO in the next version of the database:
+// Change Theme to Themes
+
 const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
@@ -35,7 +38,7 @@ app.use(function (req, res, next) {
  * Example get method *
  **********************/
 
-app.get("/users", function (req, res) {
+app.get("/TODO-fy/users", function (req, res) {
   const connection = mysql.createConnection(mysqlConfig);
 
   connection.connect((error) => {
@@ -53,31 +56,19 @@ app.get("/users", function (req, res) {
   });
 });
 
-app.get("/users/*", function (req, res) {
-  // Add your code here
-  res.json({
-    success: "get call succeed!",
-    url: req.url,
-  });
-});
-
-/****************************
- * Example post method *
- ****************************/
-
-app.post("/users", function (req, res) {
+app.post("/TODO-fy/addUser", function (req, res) {
   // Add your code here
   const connection = mysql.createConnection(mysqlConfig);
   connection.connect((error) => {
     if (error) {
-      res.json({ errorMes: error });
+      res.json({ error: error });
     } else {
       connection.query(
         "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
         [req.body.username, req.body.email, req.body.displayName],
         function (error, result, fields) {
           if (error) {
-            res.json({ errorMes: error });
+            res.json({ error: error });
           } else {
             res.json({ result: result, fields: fields });
           }
@@ -85,41 +76,73 @@ app.post("/users", function (req, res) {
       );
     }
   });
-  // res.json({ success: "post call succeed!", url: req.url, body: req.body });
 });
 
-app.post("/items/*", function (req, res) {
-  // Add your code here
-  res.json({ success: "post call succeed!", url: req.url, body: req.body });
+app.post("/TODO-fy/addProject", function (req, res) {
+  const connection = mysql.createConnection(mysqlConfig);
+  connection.connect((error) => {
+    if (error) {
+      res.json({ error: error });
+    } else {
+      connection.query(
+        "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
+        [req.body.title, req.body.theme, req.body.owner],
+        function (error, result, fields) {
+          if (error) {
+            res.json({ error: error });
+          } else {
+            res.json({ result: result, fields: fields });
+          }
+        }
+      );
+    }
+  });
 });
+
+// app.get("/users/*", function (req, res) {
+//   // Add your code here
+//   res.json({
+//     success: "get call succeed!",
+//     url: req.url,
+//   });
+// });
+
+/****************************
+ * Example post method *
+ ****************************/
+
+// app.post("/items/*", function (req, res) {
+//   // Add your code here
+//   res.json({ success: "post call succeed!", url: req.url, body: req.body });
+// });
 
 /****************************
  * Example put method *
  ****************************/
 
-app.put("/items", function (req, res) {
-  // Add your code here
-  res.json({ success: "put call succeed!", url: req.url, body: req.body });
-});
+// app.put("/items", function (req, res) {
+//   // Add your code here
+//   res.json({ success: "put call succeed!", url: req.url, body: req.body });
+// });
 
-app.put("/items/*", function (req, res) {
-  // Add your code here
-  res.json({ success: "put call succeed!", url: req.url, body: req.body });
-});
+// app.put("/items/*", function (req, res) {
+//   // Add your code here
+//   res.json({ success: "put call succeed!", url: req.url, body: req.body });
+// });
 
 /****************************
  * Example delete method *
  ****************************/
 
-app.delete("/items", function (req, res) {
-  // Add your code here
-  res.json({ success: "delete call succeed!", url: req.url });
-});
+// app.delete("/items", function (req, res) {
+//   // Add your code here
+//   res.json({ success: "delete call succeed!", url: req.url });
+// });
 
-app.delete("/items/*", function (req, res) {
-  // Add your code here
-  res.json({ success: "delete call succeed!", url: req.url });
-});
+// app.delete("/items/*", function (req, res) {
+//   // Add your code here
+//   res.json({ success: "delete call succeed!", url: req.url });
+// });
 
 app.listen(3000, function () {
   console.log("App started");

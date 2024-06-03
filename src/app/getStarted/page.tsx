@@ -68,7 +68,7 @@ export default function GetStarted() {
     try {
       const restOperation = post({
         apiName: "todofy",
-        path: "/users",
+        path: "/TODO-fy/addUser",
         options: {
           body: {
             username: userName,
@@ -129,7 +129,7 @@ export default function GetStarted() {
         username: userName,
         confirmationCode: verificationCode,
       });
-      addUser();
+      await addUser();
       nextSlide();
     } catch (e) {
       console.log(e);
@@ -140,11 +140,23 @@ export default function GetStarted() {
     try {
       await signIn({ username: userName, password: password });
       const themeID = themeArray.indexOf(theme) + 1;
-      const body = {
+      const payload = {
         title: projectTitle,
         theme: themeID,
         owner: userName,
       };
+
+      const request = post({
+        apiName: "todofy",
+        path: "/TODO-fy/addProject",
+        options: {
+          body: payload,
+        },
+      });
+
+      const { body } = await request.response;
+      const response = await body.json();
+      console.log(response);
     } catch (e) {
       console.log(e);
     }
