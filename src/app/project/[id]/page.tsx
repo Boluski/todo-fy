@@ -5,13 +5,26 @@ import { get } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import SortableItem from "./SortableItem";
+
+import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
+  arrayMove,
+} from "@dnd-kit/sortable";
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   const projectID = params.id;
-  const [userName, setUserName] = useState("");
+  // const [items, setItems] = useState([1, 2, 3]);
+  // const sensors = useSensors(
+  //   useSensor(PointerSensor),
+  //   useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  // );
 
   type sqlData = {
     isError: true;
@@ -60,12 +73,38 @@ export default function Project({ params }: { params: { id: string } }) {
       router.push("/dashboard");
     }
   };
+
+  // const names = ["Bolu", "Bosun", "Omolade"];
   useEffect(() => {
     isAuthorized();
   }, []);
+
+  // function handleDragEnd(event: any) {
+  //   console.log(event);
+  //   const { active, over } = event;
+  //   if (active.id !== over.id) {
+  //     setItems((items) => {
+  //       const oldIndex = items.indexOf(active.id);
+  //       const newIndex = items.indexOf(over.id);
+  //       return arrayMove(items, oldIndex, newIndex);
+  //     });
+  //   }
+  // }
+
   return (
     <>
       <h1>Project ID: {projectID}</h1>
+      {/* <DndContext
+        // sensors={sensors}
+        onDragEnd={handleDragEnd}
+        collisionDetection={closestCenter}
+      >
+        <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          {items.map((id) => (
+            <SortableItem key={id} id={id} name={names[id - 1]} />
+          ))}
+        </SortableContext>
+      </DndContext> */}
     </>
   );
 }
