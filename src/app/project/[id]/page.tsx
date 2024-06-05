@@ -7,9 +7,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SortableItem from "./SortableItem";
 
-import { Stack } from "@mantine/core";
+import { Group, Stack, ScrollArea } from "@mantine/core";
 
 import ProjectNav from "../../components/ProjectNav";
+import List from "../../components/List";
 
 import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 import {
@@ -104,7 +105,22 @@ export default function Project({ params }: { params: { id: string } }) {
     <>
       <Stack h={"100vh"} bg={"green.0"} p={10}>
         <ProjectNav />
-        <Stack></Stack>
+        <ScrollArea type="never">
+          <Group
+            // styles={xray}
+            h={"100%"}
+            align={"flex-start"}
+            wrap="nowrap"
+          >
+            <List listTitle="In Queue" />
+            <List listTitle="Started" testH={"40rem"} />
+            <List listTitle="In Progress" testH={"45rem"} />
+            <List listTitle="Done" testH={"40rem"} />
+            <List testH={"40rem"} />
+            <List testH={"60rem"} />
+            <List testH={"80rem"} />
+          </Group>
+        </ScrollArea>
       </Stack>
 
       {/* <DndContext
