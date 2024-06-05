@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SortableItem from "./SortableItem";
 
+import { Stack } from "@mantine/core";
+
+import ProjectNav from "../../components/ProjectNav";
+
 import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -17,6 +21,11 @@ import {
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
+  const xray = {
+    root: {
+      outline: "2px solid blue",
+    },
+  };
   const router = useRouter();
 
   const projectID = params.id;
@@ -93,7 +102,11 @@ export default function Project({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <h1>Project ID: {projectID}</h1>
+      <Stack h={"100vh"} bg={"green.0"} p={10}>
+        <ProjectNav />
+        <Stack></Stack>
+      </Stack>
+
       {/* <DndContext
         // sensors={sensors}
         onDragEnd={handleDragEnd}
