@@ -3,6 +3,11 @@ import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { IoMdAdd } from "react-icons/io";
 
 export default function List(props: any) {
+  const xray = {
+    root: {
+      outline: "2px solid blue",
+    },
+  };
   return (
     <>
       <Paper shadow={"md"}>
