@@ -3,6 +3,7 @@ import { forwardRef } from "react";
 import { Stack, Group, Title, ActionIcon, Paper, Button } from "@mantine/core";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { IoMdAdd } from "react-icons/io";
+import Card from "./Card";
 
 // import { useSortable } from "@dnd-kit/sortable";
 // import { CSS } from "@dnd-kit/utilities";
@@ -14,7 +15,7 @@ function List(props: any, ref: any) {
         <Paper shadow={"md"}>
           <Stack
             bg={"white"}
-            w={"20rem"}
+            w={"25rem"}
             p={10}
             styles={{ root: { borderRadius: "5px" } }}
           >
@@ -28,9 +29,14 @@ function List(props: any, ref: any) {
             <Stack
               w={"100%"}
               mih={"20rem"}
+              p={10}
               h={props.testH}
               bg={"gray.2"}
-            ></Stack>
+            >
+              <Card />
+              <Card />
+              <Card />
+            </Stack>
 
             <Button
               leftSection={<IoMdAdd size={"1.5em"} />}

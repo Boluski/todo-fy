@@ -32,7 +32,11 @@ export default function AddListBtn() {
 
         <Collapse in={opened}>
           <FocusTrap active={opened}>
-            <TextInput size="md" placeholder="Enter List Name" />
+            <TextInput
+              variant="filled"
+              size="md"
+              placeholder="Enter List Name"
+            />
           </FocusTrap>
         </Collapse>
       </Stack>

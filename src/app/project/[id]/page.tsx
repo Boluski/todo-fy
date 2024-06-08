@@ -22,27 +22,14 @@ import SortableItem from "./SortableItem";
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
-  const xray = {
-    root: {
-      outline: "2px solid blue",
-    },
-  };
   const router = useRouter();
 
   const projectID = params.id;
 
   const [activeId, setActiveId] = useState(null);
-  const [items, setItems] = useState([1, 2, 3, 4, 5, 6, 7]);
-  const listTitleArray = [
-    "In Queue",
-    "Started",
-    "In Progress",
-    "Done",
-    "Start again",
-    "Marketing",
-    "Fix",
-  ];
-  const testHArray = ["", "40rem", "45rem", "", "50rem", "70rem", "60rem"];
+  const [items, setItems] = useState([1, 2, 3, 4, 5]);
+  const listTitleArray = ["In Queue", "Started", "In Progress", "Done", "Fix"];
+  const testHArray = ["", "40rem", "45rem", "", "60rem"];
 
   type sqlData = {
     isError: true;
@@ -145,7 +132,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   />
                 ))}
               </SortableContext>
-              <DragOverlay style={{ opacity: 0.7 }}>
+              <DragOverlay style={{ opacity: 0.7, cursor: "grab" }}>
                 {activeId ? (
                   <List
                     id={activeId}
