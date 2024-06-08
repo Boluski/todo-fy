@@ -27,8 +27,8 @@ export default function Project({ params }: { params: { id: string } }) {
   const projectID = params.id;
 
   const [activeId, setActiveId] = useState(null);
-  const [items, setItems] = useState([1, 2]);
-  const listTitleArray = ["In Queue", "Started"];
+  const [items, setItems] = useState([1, 2, 3]);
+  const listTitleArray = ["In Queue", "Started", "In progress"];
 
   type sqlData = {
     isError: true;
@@ -136,6 +136,10 @@ export default function Project({ params }: { params: { id: string } }) {
                       },
                       {
                         title: "landing page backend",
+                        description: ``,
+                      },
+                      {
+                        title: "testing",
                         description: ``,
                       },
                     ]}
