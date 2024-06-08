@@ -5,7 +5,6 @@ import { get } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import SortableItem from "./SortableItem";
 
 import { Group, Stack, ScrollArea } from "@mantine/core";
 
@@ -16,10 +15,10 @@ import AddListBtn from "../../components/AddListBtn";
 import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
-  verticalListSortingStrategy,
-  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
+import SortableItem from "./SortableItem";
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
@@ -31,11 +30,19 @@ export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   const projectID = params.id;
-  // const [items, setItems] = useState([1, 2, 3]);
-  // const sensors = useSensors(
-  //   useSensor(PointerSensor),
-  //   useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  // );
+
+  const [activeId, setActiveId] = useState(null);
+  const [items, setItems] = useState([1, 2, 3, 4, 5, 6, 7]);
+  const listTitleArray = [
+    "In Queue",
+    "Started",
+    "In Progress",
+    "Done",
+    "Start again",
+    "Marketing",
+    "Fix",
+  ];
+  const testHArray = ["", "40rem", "45rem", "", "50rem", "70rem", "60rem"];
 
   type sqlData = {
     isError: true;
@@ -85,22 +92,29 @@ export default function Project({ params }: { params: { id: string } }) {
     }
   };
 
-  // const names = ["Bolu", "Bosun", "Omolade"];
   useEffect(() => {
     isAuthorized();
   }, []);
 
-  // function handleDragEnd(event: any) {
-  //   console.log(event);
-  //   const { active, over } = event;
-  //   if (active.id !== over.id) {
-  //     setItems((items) => {
-  //       const oldIndex = items.indexOf(active.id);
-  //       const newIndex = items.indexOf(over.id);
-  //       return arrayMove(items, oldIndex, newIndex);
-  //     });
-  //   }
-  // }
+  function handleDragStart(event: any) {
+    const { active } = event;
+    console.log(event);
+
+    setActiveId(active.id);
+  }
+
+  function handleDragEnd(event: any) {
+    console.log(event);
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+    setActiveId(null);
+  }
 
   return (
     <>
@@ -113,26 +127,39 @@ export default function Project({ params }: { params: { id: string } }) {
             align={"flex-start"}
             wrap="nowrap"
           >
-            <List listTitle="In Queue" />
-            <List listTitle="Started" testH={"40rem"} />
-            <List listTitle="In Progress" testH={"45rem"} />
-            <List listTitle="Done" testH={"40rem"} />
+            <DndContext
+              onDragEnd={handleDragEnd}
+              onDragStart={handleDragStart}
+              collisionDetection={closestCenter}
+            >
+              <SortableContext
+                items={items}
+                strategy={horizontalListSortingStrategy}
+              >
+                {items.map((id) => (
+                  <SortableItem
+                    key={id}
+                    id={id}
+                    listTitle={listTitleArray[id - 1]}
+                    testH={testHArray[id - 1]}
+                  />
+                ))}
+              </SortableContext>
+              <DragOverlay style={{ opacity: 0.7 }}>
+                {activeId ? (
+                  <List
+                    id={activeId}
+                    listTitle={listTitleArray[activeId - 1]}
+                    testH={testHArray[activeId - 1]}
+                  />
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+
             <AddListBtn />
           </Group>
         </ScrollArea>
       </Stack>
-
-      {/* <DndContext
-        // sensors={sensors}
-        onDragEnd={handleDragEnd}
-        collisionDetection={closestCenter}
-      >
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
-          {items.map((id) => (
-            <SortableItem key={id} id={id} name={names[id - 1]} />
-          ))}
-        </SortableContext>
-      </DndContext> */}
     </>
   );
 }
