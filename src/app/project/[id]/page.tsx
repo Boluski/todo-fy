@@ -18,7 +18,7 @@ import {
   horizontalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
-import SortableItem from "./SortableItem";
+import SortableList from "../../components/SortableList";
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
@@ -27,9 +27,8 @@ export default function Project({ params }: { params: { id: string } }) {
   const projectID = params.id;
 
   const [activeId, setActiveId] = useState(null);
-  const [items, setItems] = useState([1, 2, 3, 4, 5]);
-  const listTitleArray = ["In Queue", "Started", "In Progress", "Done", "Fix"];
-  const testHArray = ["", "40rem", "45rem", "", "60rem"];
+  const [items, setItems] = useState([1, 2]);
+  const listTitleArray = ["In Queue", "Started"];
 
   type sqlData = {
     isError: true;
@@ -124,20 +123,35 @@ export default function Project({ params }: { params: { id: string } }) {
                 strategy={horizontalListSortingStrategy}
               >
                 {items.map((id) => (
-                  <SortableItem
+                  <SortableList
                     key={id}
                     id={id}
                     listTitle={listTitleArray[id - 1]}
-                    testH={testHArray[id - 1]}
+                    card={[
+                      {
+                        title: "landing page ui",
+                        description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
+                    molestias aliquam quasi delectus, deserunt obcaecati veniam qui
+                    dicta repellat nisi debitis.`,
+                      },
+                      {
+                        title: "landing page backend",
+                        description: ``,
+                      },
+                    ]}
                   />
                 ))}
               </SortableContext>
-              <DragOverlay style={{ opacity: 0.7, cursor: "grab" }}>
+              <DragOverlay
+                style={{
+                  opacity: 0.7,
+                  cursor: "grab",
+                }}
+              >
                 {activeId ? (
                   <List
                     id={activeId}
                     listTitle={listTitleArray[activeId - 1]}
-                    testH={testHArray[activeId - 1]}
                   />
                 ) : null}
               </DragOverlay>

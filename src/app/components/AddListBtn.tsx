@@ -15,7 +15,7 @@ export default function AddListBtn() {
   return (
     <Paper shadow="md">
       <Stack
-        w={"20rem"}
+        w={"25rem"}
         bg={"white"}
         p={10}
         styles={{ root: { borderRadius: "5px" } }}

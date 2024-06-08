@@ -1,8 +1,8 @@
-import List from "../../components/List";
+import List from "./List";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-export default function SortableItem(props: any) {
+export default function SortableList(props: any) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
   const style = {
@@ -12,7 +12,7 @@ export default function SortableItem(props: any) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <List listTitle={props.listTitle} testH={props.testH} />
+      <List listTitle={props.listTitle} testH={props.testH} card={props.card} />
     </div>
   );
 }

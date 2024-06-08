@@ -18,13 +18,10 @@ export default function Card(props: any) {
           //    styles={xray}
         >
           <Title lineClamp={2} order={3}>
-            Work on the home page
+            {props.title}
           </Title>
           <Text pt={5} lineClamp={3}>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit
-            voluptate eveniet commodi maxime porro eius aut officia libero
-            molestias aliquam quasi delectus, deserunt obcaecati veniam qui
-            dicta repellat nisi debitis.
+            {props.description}
           </Text>
           <Group pt={10} justify="end">
             <TbSubtask size={"1.2rem"} />

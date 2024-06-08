@@ -9,10 +9,17 @@ import Card from "./Card";
 // import { CSS } from "@dnd-kit/utilities";
 
 function List(props: any, ref: any) {
+  type CardType = {
+    title: String;
+    description: String;
+  };
+  const cards = props.card;
+  // console.log(cards[0]);
+
   return (
     <>
       <div ref={ref}>
-        <Paper shadow={"md"}>
+        <Paper shadow={"md"} mb={"2rem"}>
           <Stack
             bg={"white"}
             w={"25rem"}
@@ -26,16 +33,21 @@ function List(props: any, ref: any) {
               </ActionIcon>
             </Group>
 
-            <Stack
-              w={"100%"}
-              mih={"20rem"}
-              p={10}
-              h={props.testH}
-              bg={"gray.2"}
-            >
-              <Card />
-              <Card />
-              <Card />
+            <Stack w={"100%"} mih={"20rem"} p={10} bg={"gray.2"}>
+              {/* {cards.map((id: any, index: Number) => {
+                <Card key={index} />;
+              })} */}
+
+              {cards &&
+                cards.map((card: any, id: any) => {
+                  return (
+                    <Card
+                      key={id}
+                      title={card.title}
+                      description={card.description}
+                    />
+                  );
+                })}
             </Stack>
 
             <Button
