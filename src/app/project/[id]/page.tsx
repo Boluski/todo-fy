@@ -11,6 +11,7 @@ import { Group, Stack, ScrollArea } from "@mantine/core";
 
 import ProjectNav from "../../components/ProjectNav";
 import List from "../../components/List";
+import AddListBtn from "../../components/AddListBtn";
 
 import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 import {
@@ -116,9 +117,7 @@ export default function Project({ params }: { params: { id: string } }) {
             <List listTitle="Started" testH={"40rem"} />
             <List listTitle="In Progress" testH={"45rem"} />
             <List listTitle="Done" testH={"40rem"} />
-            <List testH={"40rem"} />
-            <List testH={"60rem"} />
-            <List testH={"80rem"} />
+            <AddListBtn />
           </Group>
         </ScrollArea>
       </Stack>
