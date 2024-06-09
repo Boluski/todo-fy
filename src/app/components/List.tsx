@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useState, useEffect } from "react";
 
 import { Stack, Group, Title, ActionIcon, Paper, Button } from "@mantine/core";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
@@ -17,35 +17,43 @@ import {
 // import { CSS } from "@dnd-kit/utilities";
 
 function List(props: any, ref: any) {
-  const [items, setItems] = useState([1, 2, 3]);
+  const items: [] = props.items;
+  // console.log("List:", items);
+
+  // const [items, setItems] = useState(props.items as []);
   const [activeId, setActiveId] = useState(null);
   type CardType = {
     title: String;
     description: String;
+    id: String;
   };
+
   const cards: CardType[] = props.card;
 
-  function handleDragStart(event: any) {
-    const { active } = event;
-    console.log(event);
+  // function handleDragStart(event: any) {
+  //   const { active } = event;
+  //   console.log(event);
 
-    setActiveId(active.id);
-  }
+  //   setActiveId(active.id);
+  // }
 
-  function handleDragEnd(event: any) {
-    console.log(event);
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-    setActiveId(null);
-  }
+  // function handleDragEnd(event: any) {
+  //   console.log(event);
+  //   const { active, over } = event;
+  //   if (active.id !== over.id) {
+  //     setItems((items) => {
+  //       const oldIndex = items.indexOf(active.id);
+  //       const newIndex = items.indexOf(over.id);
+  //       return arrayMove(items, oldIndex, newIndex);
+  //     });
+  //   }
+  //   setActiveId(null);
+  // }
   // console.log(cards[0]);
 
+  // useEffect(() => {
+  //   setItems(props.items);
+  // }, []);
   return (
     <>
       <div ref={ref}>
@@ -64,44 +72,51 @@ function List(props: any, ref: any) {
             </Group>
 
             <Stack w={"100%"} mih={"20rem"} p={10} bg={"gray.2"}>
-              <DndContext
+              {/* <DndContext
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
                 onDragStart={handleDragStart}
+              > */}
+              <SortableContext
+                items={items}
+                strategy={verticalListSortingStrategy}
               >
-                <SortableContext
-                  items={items}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {cards &&
-                    items.map((id) => {
-                      console.log(cards[id]);
+                {items &&
+                  items.map((id, index) => {
+                    let search = 0;
+                    for (let index = 0; index < cards.length; index++) {
+                      const element = cards[index];
+                      if (element.id === id) {
+                        search = index;
+                      }
+                    }
 
-                      return (
-                        <SortableCard
-                          key={id}
-                          id={id}
-                          title={cards[id - 1]?.title}
-                          description={cards[id - 1]?.description}
-                        />
-                      );
-                    })}
-                </SortableContext>
-                <DragOverlay
-                  style={{
-                    opacity: 0.5,
-                    cursor: "grab",
-                  }}
-                >
-                  {activeId ? (
-                    <Card
-                      id={activeId}
-                      title={cards[activeId - 1]?.title}
-                      description={cards[activeId - 1]?.description}
-                    />
-                  ) : null}
-                </DragOverlay>
-              </DndContext>
+                    return (
+                      <SortableCard
+                        key={id}
+                        id={id}
+                        title={cards[search]?.title}
+                        description={cards[search]?.description}
+                      />
+                    );
+                    // }
+                  })}
+              </SortableContext>
+              {/* <DragOverlay
+                style={{
+                  opacity: 0.5,
+                  cursor: "grab",
+                }}
+              >
+                {activeId ? (
+                  <Card
+                    id={activeId}
+                    title={cards[items.indexOf(activeId)]?.title}
+                    description={cards[items.indexOf(activeId)]?.description}
+                  />
+                ) : null}
+              </DragOverlay> */}
+              {/* </DndContext> */}
             </Stack>
 
             <Button

@@ -11,8 +11,18 @@ export default function SortableList(props: any) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <List listTitle={props.listTitle} testH={props.testH} card={props.card} />
+    <div
+    // ref={setNodeRef}
+    // style={style}
+    //  {...attributes}
+    //  {...listeners}
+    >
+      <List
+        listTitle={props.listTitle}
+        testH={props.testH}
+        card={props.card}
+        items={props.items}
+      />
     </div>
   );
 }
