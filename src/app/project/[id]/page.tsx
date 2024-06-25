@@ -35,6 +35,65 @@ export default function Project({ params }: { params: { id: string } }) {
     ["A1", "A2", "A3"],
     ["B1", "B2"],
   ]);
+
+  type cardType = {
+    cardID: string;
+    cardTitle: string;
+    cardDescription: string;
+  };
+
+  type listType = {
+    listID: string;
+    listTitle: string;
+    cards: cardType[];
+  };
+
+  let schema: listType[] = [
+    {
+      listID: "1",
+      listTitle: "In Queue",
+      cards: [
+        {
+          cardID: "A1",
+          cardTitle: "landing page ui",
+          cardDescription: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
+                    molestias aliquam quasi delectus, deserunt obcaecati veniam qui
+                    dicta repellat nisi debitis.`,
+        },
+        {
+          cardID: "A2",
+          cardTitle: "landing page backend",
+          cardDescription: ``,
+        },
+        {
+          cardID: "A3",
+          cardTitle: "testing",
+          cardDescription: ``,
+        },
+      ],
+    },
+    {
+      listID: "2",
+      listTitle: "Started",
+      cards: [
+        {
+          cardID: "B1",
+          cardTitle: "Cool Done",
+          cardDescription: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
+                    molestias aliquam quasi delectus, deserunt obcaecati veniam qui
+                    dicta repellat nisi debitis.`,
+        },
+        {
+          cardID: "B2",
+          cardTitle: "Coollade guy",
+          cardDescription: ``,
+        },
+      ],
+    },
+  ];
+
+  const [lists, setLists] = useState(schema);
+
   console.log(itemsCard);
 
   const listArray = [1, 2];
@@ -182,6 +241,7 @@ export default function Project({ params }: { params: { id: string } }) {
         //   "arrayMove: ",
         //   arrayMove(itemsCard[search], oldIndex, newIndex)
         // );
+
         console.log("oldList", itemsCard);
 
         const test = handleArray(
@@ -196,6 +256,49 @@ export default function Project({ params }: { params: { id: string } }) {
       });
     }
     setActiveIdCard(null);
+  }
+
+  function handleOnDragOver(event: any) {
+    console.log("Drag over:", event);
+  }
+
+  function handleOnDragEnd(event: any) {
+    console.log("Event:", event);
+    const { active, over } = event;
+
+    if (active.id != over.id) {
+      const activeListIndex = lists.findIndex((list) =>
+        list.cards.some((card) => card.cardID == active.id)
+      );
+      const activeCardIndex = lists[activeListIndex].cards.findIndex(
+        (card) => card.cardID == active.id
+      );
+
+      const overListIndex = lists.findIndex((list) =>
+        list.cards.some((card) => card.cardID == over.id)
+      );
+      const overCardIndex = lists[overListIndex].cards.findIndex(
+        (card) => card.cardID == over.id
+      );
+
+      console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
+      console.log("Over", lists[overListIndex].cards[overCardIndex]);
+
+      if (lists[activeListIndex] == lists[overListIndex]) {
+        const sortedCards = arrayMove(
+          lists[activeListIndex].cards,
+          activeCardIndex,
+          overCardIndex
+        );
+
+        let newLists: listType[] = { ...lists };
+        newLists[activeListIndex].cards = sortedCards;
+        setLists(Object.values(newLists));
+        console.log(lists);
+      }
+
+      // console.log(lists[0].cards[activeCard]);
+    }
   }
 
   return (
@@ -221,8 +324,9 @@ export default function Project({ params }: { params: { id: string } }) {
 
             <DndContext
               collisionDetection={closestCenter}
-              onDragEnd={handleDragEndCard}
-              onDragStart={handleDragStartCard}
+              // onDragOver={handleOnDragOver}
+              onDragEnd={handleOnDragEnd}
+              // onDragStart={}
             >
               {/* {items.map((id) => (
                 <SortableList
@@ -247,10 +351,25 @@ export default function Project({ params }: { params: { id: string } }) {
                   ]}
                 />
               ))} */}
+
+              {lists.map((list) => (
+                <SortableList
+                  key={list.listID}
+                  id={list.listID}
+                  listTitle={list.listTitle}
+                  items={list.cards.map((card) => card.cardID)}
+                  card={list.cards.map((card) => ({
+                    cardTitle: card.cardTitle,
+                    cardDescription: card.cardDescription,
+                    cardID: card.cardID,
+                  }))}
+                />
+              ))}
+              {/* 
               <SortableList
-                key={1}
+                key={listArray}
                 id={listArray[0]}
-                listTitle={listTitleArray[1 - 1]}
+                listTitle={listTitleArray[0]}
                 items={itemsCard[0]}
                 card={[
                   {
@@ -272,10 +391,11 @@ export default function Project({ params }: { params: { id: string } }) {
                   },
                 ]}
               />
+
               <SortableList
                 key={2}
-                id={listArray[2]}
-                listTitle={listTitleArray[2 - 1]}
+                id={listArray[1]}
+                listTitle={listTitleArray[1]}
                 items={itemsCard[1]}
                 card={[
                   {
@@ -291,7 +411,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     id: "B2",
                   },
                 ]}
-              />
+              /> */}
             </DndContext>
 
             {/* </SortableContext>

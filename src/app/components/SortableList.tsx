@@ -3,6 +3,8 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 export default function SortableList(props: any) {
+  // console.log("TestH: ", props.testH);
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.id });
   const style = {
@@ -17,12 +19,7 @@ export default function SortableList(props: any) {
     //  {...attributes}
     //  {...listeners}
     >
-      <List
-        listTitle={props.listTitle}
-        testH={props.testH}
-        card={props.card}
-        items={props.items}
-      />
+      <List listTitle={props.listTitle} card={props.card} items={props.items} />
     </div>
   );
 }

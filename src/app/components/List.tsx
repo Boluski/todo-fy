@@ -17,18 +17,20 @@ import {
 // import { CSS } from "@dnd-kit/utilities";
 
 function List(props: any, ref: any) {
-  const items: [] = props.items;
+  // const items: [] = props.items;
   // console.log("List:", items);
 
   // const [items, setItems] = useState(props.items as []);
   const [activeId, setActiveId] = useState(null);
-  type CardType = {
-    title: String;
-    description: String;
-    id: String;
+
+  type cardType = {
+    cardID: string;
+    cardTitle: string;
+    cardDescription: string;
   };
 
-  const cards: CardType[] = props.card;
+  const cards: cardType[] = props.card;
+  console.log("Cards:", cards);
 
   // function handleDragStart(event: any) {
   //   const { active } = event;
@@ -78,12 +80,22 @@ function List(props: any, ref: any) {
                 onDragStart={handleDragStart}
               > */}
               <SortableContext
-                items={items}
+                items={cards.map((card) => card.cardID)}
                 strategy={verticalListSortingStrategy}
               >
-                {items &&
+                {cards.map((card) => (
+                  <SortableCard
+                    key={card.cardID}
+                    id={card.cardID}
+                    title={card.cardTitle}
+                    description={card.cardDescription}
+                  />
+                ))}
+
+                {/* {items &&
                   items.map((id, index) => {
                     let search = 0;
+
                     for (let index = 0; index < cards.length; index++) {
                       const element = cards[index];
                       if (element.id === id) {
@@ -100,7 +112,7 @@ function List(props: any, ref: any) {
                       />
                     );
                     // }
-                  })}
+                  })} */}
               </SortableContext>
               {/* <DragOverlay
                 style={{
