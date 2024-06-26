@@ -21,7 +21,14 @@ export default function SortableList(props: any) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <List listTitle={props.listTitle} card={props.card} items={props.items} />
+      <List
+        listIndex={props.listIndex}
+        listTitle={props.listTitle}
+        card={props.card}
+        items={props.items}
+        lists={props.lists}
+        setLists={props.setLists}
+      />
     </div>
   );
 }

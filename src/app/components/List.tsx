@@ -1,64 +1,30 @@
+"use client";
 import { forwardRef, useState, useEffect } from "react";
 
 import { Stack, Group, Title, ActionIcon, Paper, Button } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { IoMdAdd } from "react-icons/io";
 import SortableCard from "./SortableCard";
-import Card from "./Card";
-import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 
+import { cardType } from "../utils/todofyTypes";
 import {
   SortableContext,
   verticalListSortingStrategy,
-  arrayMove,
 } from "@dnd-kit/sortable";
+import AddCardBtn from "./AddCardBtn";
 
-// import { useSortable } from "@dnd-kit/sortable";
-// import { CSS } from "@dnd-kit/utilities";
-
-function List(props: any, ref: any) {
-  // const items: [] = props.items;
-  // console.log("List:", items);
-
-  // const [items, setItems] = useState(props.items as []);
-  const [activeId, setActiveId] = useState(null);
-
-  type cardType = {
-    cardID: string;
-    cardTitle: string;
-    cardDescription: string;
-    alpha: number;
-  };
-
+export default function List(props: any) {
+  const [opened, { toggle }] = useDisclosure(false);
   const cards: cardType[] = props.card;
+  console.log(">>>", props.listIndex);
 
-  // function handleDragStart(event: any) {
-  //   const { active } = event;
-  //   console.log(event);
+  // lists={props.lists}
+  // setLists={props.setLists}
 
-  //   setActiveId(active.id);
-  // }
-
-  // function handleDragEnd(event: any) {
-  //   console.log(event);
-  //   const { active, over } = event;
-  //   if (active.id !== over.id) {
-  //     setItems((items) => {
-  //       const oldIndex = items.indexOf(active.id);
-  //       const newIndex = items.indexOf(over.id);
-  //       return arrayMove(items, oldIndex, newIndex);
-  //     });
-  //   }
-  //   setActiveId(null);
-  // }
-  // console.log(cards[0]);
-
-  // useEffect(() => {
-  //   setItems(props.items);
-  // }, []);
   return (
     <>
-      <div ref={ref}>
+      <div>
         <Paper shadow={"md"} mb={"2rem"}>
           <Stack
             bg={"white"}
@@ -74,11 +40,6 @@ function List(props: any, ref: any) {
             </Group>
 
             <Stack w={"100%"} mih={"5rem"} p={10} bg={"gray.2"}>
-              {/* <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
-              > */}
               <SortableContext
                 items={cards.map((card) => card.cardID)}
                 strategy={verticalListSortingStrategy}
@@ -92,50 +53,21 @@ function List(props: any, ref: any) {
                     alpha={card.alpha}
                   />
                 ))}
-
-                {/* {items &&
-                  items.map((id, index) => {
-                    let search = 0;
-
-                    for (let index = 0; index < cards.length; index++) {
-                      const element = cards[index];
-                      if (element.id === id) {
-                        search = index;
-                      }
-                    }
-
-                    return (
-                      <SortableCard
-                        key={id}
-                        id={id}
-                        title={cards[search]?.title}
-                        description={cards[search]?.description}
-                      />
-                    );
-                    // }
-                  })} */}
               </SortableContext>
-              {/* <DragOverlay
-                style={{
-                  opacity: 0.5,
-                  cursor: "grab",
-                }}
-              >
-                {activeId ? (
-                  <Card
-                    id={activeId}
-                    title={cards[items.indexOf(activeId)]?.title}
-                    description={cards[items.indexOf(activeId)]?.description}
-                  />
-                ) : null}
-              </DragOverlay> */}
-              {/* </DndContext> */}
+              <AddCardBtn
+                display={opened}
+                setToggle={toggle}
+                lists={props.lists}
+                setLists={props.setLists}
+                listIndex={props.listIndex}
+              />
             </Stack>
 
             <Button
               leftSection={<IoMdAdd size={"1.5em"} />}
               color="black"
               variant="transparent"
+              onClick={toggle}
             >
               Add Card
             </Button>
@@ -144,6 +76,77 @@ function List(props: any, ref: any) {
       </div>
     </>
   );
+
+  // function showNewCardComp() {
+  //   toggle();
+  // }
 }
 
-export default forwardRef(List);
+// const List = forwardRef((props: any, ref: any) => {
+//   const [show, setShow] = useState(false);
+//   console.log(show);
+//   console.log("Ref", ref);
+
+//   const cards: cardType[] = props.card;
+
+//   // useEffect(() => {
+//   //   console.log("Update", show);
+//   // }, [show]);
+
+//   return (
+//     <>
+//       <div ref={ref}>
+//         <Paper shadow={"md"} mb={"2rem"}>
+//           <Stack
+//             bg={"white"}
+//             w={"25rem"}
+//             p={10}
+//             styles={{ root: { borderRadius: "5px" } }}
+//           >
+//             <Group justify={"space-between"}>
+//               <Title order={3}>{props.listTitle}</Title>
+//               <ActionIcon size={"lg"} variant="subtle" color="black">
+//                 <PiDotsThreeOutlineVerticalFill size={"1.5em"} />
+//               </ActionIcon>
+//             </Group>
+
+//             <Stack w={"100%"} mih={"5rem"} p={10} bg={"gray.2"}>
+//               <SortableContext
+//                 items={cards.map((card) => card.cardID)}
+//                 strategy={verticalListSortingStrategy}
+//               >
+//                 {cards.map((card) => (
+//                   <SortableCard
+//                     key={card.cardID}
+//                     id={card.cardID}
+//                     title={card.cardTitle}
+//                     description={card.cardDescription}
+//                     alpha={card.alpha}
+//                   />
+//                 ))}
+//               </SortableContext>
+//               <AddCardBtn display={show} />
+//             </Stack>
+
+//             <Button
+//               leftSection={<IoMdAdd size={"1.5em"} />}
+//               color="black"
+//               variant="transparent"
+//               onClick={() => {
+//                 setShow(true);
+//               }}
+//             >
+//               Add Card
+//             </Button>
+//           </Stack>
+//         </Paper>
+//       </div>
+//     </>
+//   );
+
+//   // function showNewCardComp() {
+//   //   toggle();
+//   // }
+// });
+// export default List;
+// export default forwardRef(List);

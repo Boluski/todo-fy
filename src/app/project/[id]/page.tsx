@@ -9,11 +9,20 @@ import { useRouter } from "next/navigation";
 
 import { Group, Stack, ScrollArea } from "@mantine/core";
 
+import { listType, cardType } from "../../utils/todofyTypes";
+
 import ProjectNav from "../../components/ProjectNav";
 import List from "../../components/List";
 import AddListBtn from "../../components/AddListBtn";
 
-import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  useSensors,
+  useSensor,
+  PointerSensor,
+} from "@dnd-kit/core";
 import {
   SortableContext,
   horizontalListSortingStrategy,
@@ -33,20 +42,6 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const [activeListID, setActiveListID] = useState(0);
   const [activeCardID, setActiveCardID] = useState(0);
-
-  type cardType = {
-    cardID: string;
-    cardTitle: string;
-    cardDescription: string;
-    alpha: number;
-  };
-
-  type listType = {
-    listID: string;
-    listTitle: string;
-    isEmpty: boolean;
-    cards: cardType[];
-  };
 
   let schema: listType[] = [
     {
@@ -153,6 +148,12 @@ export default function Project({ params }: { params: { id: string } }) {
     isAuthorized();
   }, []);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { delay: 1000, distance: 50 },
+    })
+  );
+
   return (
     <>
       <Stack h={"100vh"} bg={"green.0"} p={10}>
@@ -163,16 +164,20 @@ export default function Project({ params }: { params: { id: string } }) {
               collisionDetection={closestCenter}
               onDragEnd={handleOnDragEnd}
               onDragStart={handleOnDragStart}
+              sensors={sensors}
             >
               <SortableContext
                 items={lists.map((list) => list.listID)}
                 strategy={horizontalListSortingStrategy}
               >
-                {lists.map((list) => (
+                {lists.map((list, index) => (
                   <SortableList
                     key={list.listID}
                     id={list.listID}
                     listTitle={list.listTitle}
+                    lists={lists}
+                    setLists={setLists}
+                    listIndex={index}
                     items={list.cards?.map((card) => card.cardID)}
                     card={list.cards?.map((card) => ({
                       cardTitle: card.cardTitle,
@@ -208,7 +213,6 @@ export default function Project({ params }: { params: { id: string } }) {
                 </DragOverlay>
               </SortableContext>
             </DndContext>
-
             <AddListBtn lists={lists} setLists={setLists} />
           </Group>
         </ScrollArea>

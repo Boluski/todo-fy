@@ -9,6 +9,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IoMdAdd } from "react-icons/io";
 import { xray } from "../utils/xray";
+import { listType } from "../utils/todofyTypes";
 import { useState } from "react";
 
 export default function AddListBtn(props: any) {
@@ -16,20 +17,6 @@ export default function AddListBtn(props: any) {
   const [listTitle, setListTitle] = useState("");
 
   const lists: listType[] = props.lists;
-
-  type cardType = {
-    cardID: string;
-    cardTitle: string;
-    cardDescription: string;
-    alpha: number;
-  };
-
-  type listType = {
-    listID: string;
-    listTitle: string;
-    isEmpty: boolean;
-    cards: cardType[];
-  };
 
   return (
     <Paper shadow="md">

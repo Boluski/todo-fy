@@ -5,7 +5,10 @@ import { xray } from "../utils/xray";
 export default function Card(props: any) {
   return (
     <Paper shadow="sm" opacity={props.alpha}>
-      <Stack bg={"green.8"} style={{ borderRadius: "0.2rem" }}>
+      <Stack
+        // bg={"green.8"}
+        style={{ borderRadius: "0.2rem" }}
+      >
         <Stack
           gap={0}
           style={{
