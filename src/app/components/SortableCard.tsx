@@ -3,9 +3,17 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 export default function SortableCard(props: any) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.id });
+  const {
+    attributes,
+    listeners,
+    isDragging,
+    setNodeRef,
+    transform,
+    transition,
+    node,
+  } = useSortable({ id: props.id });
   const style = {
+    opacity: isDragging ? 0.4 : undefined,
     transform: CSS.Transform.toString(transform),
     transition,
   };

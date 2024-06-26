@@ -21,6 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import SortableList from "../../components/SortableList";
 import { randomUUID } from "crypto";
+import Card from "../../components/Card";
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
@@ -30,6 +31,9 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const [activeId, setActiveId] = useState(null);
   const [activeIdCard, setActiveIdCard] = useState(null);
+
+  const [activeListID, setActiveListID] = useState<any>(0);
+  const [activeCardID, setActiveCardID] = useState<any>(0);
 
   const [items, setItems] = useState([1, 2, 3]);
   const [itemsCard, setItemsCard] = useState([
@@ -272,101 +276,144 @@ export default function Project({ params }: { params: { id: string } }) {
     console.log("Drag over:", event);
   }
 
-  function handleOnDragEnd(event: any) {
-    console.log("Event:", event);
-    const { active, over } = event;
+  // function handleOnDragStart(event: any) {
+  //   const { active } = event;
 
-    const activeListIndex = lists.findIndex((list) =>
-      list.cards.some((card) => card.cardID == active.id)
-    );
-    const activeCardIndex = lists[activeListIndex].cards.findIndex(
-      (card) => card.cardID == active.id
-    );
+  //   const activeListIndex = lists.findIndex((list) =>
+  //     list.cards.some((card) => card.cardID == active.id)
+  //   );
 
-    const overListIndex = lists.findIndex((list) =>
-      list.cards.some((card) => card.cardID == over.id)
-    );
-    const overCardIndex = lists[overListIndex].cards.findIndex(
-      (card) => card.cardID == over.id
-    );
+  //   const activeCardIndex = lists[activeListIndex].cards.findIndex(
+  //     (card) => card.cardID == active.id
+  //   );
 
-    console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
-    console.log("Over", lists[overListIndex].cards[overCardIndex]);
+  //   console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
 
-    if (active.id != over.id) {
-      let newLists: listType[] = [...lists];
-      let remove = false;
-      if (lists[overListIndex].isEmpty) {
-        remove = true;
-      }
-      if (lists[activeListIndex] == lists[overListIndex]) {
-        const sortedCards = arrayMove(
-          lists[activeListIndex].cards,
-          activeCardIndex,
-          overCardIndex
-        );
+  //   setActiveListID(activeListIndex);
+  //   setActiveCardID(activeCardIndex);
+  //   console.log(activeListIndex);
+  //   console.log(activeCardIndex);
+  // }
 
-        newLists[activeListIndex].cards = sortedCards;
-        setLists(newLists);
-        console.log(lists);
-      } else {
-        if (overCardIndex == 0) {
-          let newCards: cardType[] = [];
-          if (remove) {
-            newCards = [newLists[activeListIndex].cards[activeCardIndex]];
-            newLists[overListIndex].isEmpty = false;
-          } else {
-            newCards = [
-              newLists[activeListIndex].cards[activeCardIndex],
-              ...newLists[overListIndex].cards,
-            ];
-          }
+  // function handleOnDragEnd(event: any) {
+  //   console.log("Event:", event);
+  //   const { active, over } = event;
 
-          newLists[activeListIndex].cards.splice(activeCardIndex, 1);
-          if (newLists[activeListIndex].cards.length == 0) {
-            newLists[activeListIndex].isEmpty = true;
-            newLists[activeListIndex].cards.push({
-              cardTitle: "",
-              cardDescription: "",
-              cardID: Date.now().toString(),
-              alpha: 0,
-            });
-          }
+  //   const activeListIndex = lists.findIndex((list) =>
+  //     list.cards.some((card) => card.cardID == active.id)
+  //   );
 
-          newLists[overListIndex].cards = newCards;
-          setLists(newLists);
-        }
+  //   const activeCardIndex = lists[activeListIndex].cards.findIndex(
+  //     (card) => card.cardID == active.id
+  //   );
 
-        if (!remove) {
-          if (overCardIndex == lists[overListIndex].cards.length - 1) {
-            let newCards: cardType[] = [];
+  //   const overListIndex = lists.findIndex((list) =>
+  //     list.cards.some((card) => card.cardID == over.id)
+  //   );
 
-            newCards = [
-              ...newLists[overListIndex].cards,
-              newLists[activeListIndex].cards[activeCardIndex],
-            ];
+  //   const overCardIndex = lists[overListIndex].cards.findIndex(
+  //     (card) => card.cardID == over.id
+  //   );
 
-            newLists[activeListIndex].cards.splice(activeCardIndex, 1);
-            if (newLists[activeListIndex].cards.length == 0) {
-              newLists[activeListIndex].isEmpty = true;
-              newLists[activeListIndex].cards.push({
-                cardTitle: "",
-                cardDescription: "",
-                cardID: Date.now().toString(),
-                alpha: 0,
-              });
-            }
+  //   console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
+  //   console.log("Over", lists[overListIndex].cards[overCardIndex]);
 
-            newLists[overListIndex].cards = newCards;
-            setLists(newLists);
-          }
-        }
-      }
+  //   if (active.id != over.id) {
+  //     let newLists: listType[] = [...lists];
+  //     let remove = false;
 
-      // console.log(lists[0].cards[activeCard]);
-    } else {
-    }
-  }
+  //     if (lists[overListIndex].isEmpty) {
+  //       remove = true;
+  //     }
+
+  //     if (lists[activeListIndex] == lists[overListIndex]) {
+  //       const sortedCards = arrayMove(
+  //         lists[activeListIndex].cards,
+  //         activeCardIndex,
+  //         overCardIndex
+  //       );
+
+  //       newLists[activeListIndex].cards = sortedCards;
+  //       setLists(newLists);
+  //     } else {
+  //       if (
+  //         overCardIndex != 0 &&
+  //         overCardIndex != lists[overListIndex].cards.length - 1
+  //       ) {
+  //         newLists[overListIndex].cards.splice(
+  //           overCardIndex,
+  //           0,
+  //           lists[activeListIndex].cards[activeCardIndex]
+  //         );
+  //         newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+
+  //         if (newLists[activeListIndex].cards.length == 0) {
+  //           newLists[activeListIndex].isEmpty = true;
+  //           newLists[activeListIndex].cards.push({
+  //             cardTitle: "",
+  //             cardDescription: "",
+  //             cardID: Date.now().toString(),
+  //             alpha: 0,
+  //           });
+  //         }
+  //         setLists(newLists);
+  //       } else {
+  //         if (overCardIndex == 0) {
+  //           let newCards: cardType[] = [];
+  //           if (remove) {
+  //             newCards = [newLists[activeListIndex].cards[activeCardIndex]];
+  //             newLists[overListIndex].isEmpty = false;
+  //           } else {
+  //             newCards = [
+  //               newLists[activeListIndex].cards[activeCardIndex],
+  //               ...newLists[overListIndex].cards,
+  //             ];
+  //           }
+  //           newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+
+  //           if (newLists[activeListIndex].cards.length == 0) {
+  //             newLists[activeListIndex].isEmpty = true;
+  //             newLists[activeListIndex].cards.push({
+  //               cardTitle: "",
+  //               cardDescription: "",
+  //               cardID: Date.now().toString(),
+  //               alpha: 0,
+  //             });
+  //           }
+  //           newLists[overListIndex].cards = newCards;
+  //           setLists(newLists);
+  //         }
+
+  //         if (!remove) {
+  //           if (overCardIndex == lists[overListIndex].cards.length - 1) {
+  //             let newCards: cardType[] = [];
+  //             newCards = [
+  //               ...newLists[overListIndex].cards,
+  //               newLists[activeListIndex].cards[activeCardIndex],
+  //             ];
+  //             newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+
+  //             if (newLists[activeListIndex].cards.length == 0) {
+  //               newLists[activeListIndex].isEmpty = true;
+  //               newLists[activeListIndex].cards.push({
+  //                 cardTitle: "",
+  //                 cardDescription: "",
+  //                 cardID: Date.now().toString(),
+  //                 alpha: 0,
+  //               });
+  //             }
+  //             newLists[overListIndex].cards = newCards;
+  //             setLists(newLists);
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     // console.log(lists[0].cards[activeCard]);
+  //   }
+  //   setActiveListID(null);
+  //   setActiveCardID(null);
+  // }
 
   return (
     <>
@@ -393,7 +440,7 @@ export default function Project({ params }: { params: { id: string } }) {
               collisionDetection={closestCenter}
               // onDragOver={handleOnDragOver}
               onDragEnd={handleOnDragEnd}
-              // onDragStart={}
+              onDragStart={handleOnDragStart}
             >
               {/* {items.map((id) => (
                 <SortableList
@@ -433,6 +480,17 @@ export default function Project({ params }: { params: { id: string } }) {
                   }))}
                 />
               ))}
+              <DragOverlay>
+                {activeId ? (
+                  <Card
+                    title={lists[activeListID].cards[activeCardID].cardTitle}
+                    description={
+                      lists[activeListID].cards[activeCardID].cardDescription
+                    }
+                    alpha={"1"}
+                  />
+                ) : null}
+              </DragOverlay>
               {/* 
               <SortableList
                 key={listArray}
@@ -504,4 +562,145 @@ export default function Project({ params }: { params: { id: string } }) {
       </Stack>
     </>
   );
+
+  function handleOnDragStart(event: any) {
+    const { active } = event;
+
+    const activeListIndex = lists.findIndex((list) =>
+      list.cards.some((card) => card.cardID == active.id)
+    );
+
+    const activeCardIndex = lists[activeListIndex].cards.findIndex(
+      (card) => card.cardID == active.id
+    );
+
+    console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
+
+    setActiveId(active.id);
+    setActiveListID(activeListIndex);
+    setActiveCardID(activeCardIndex);
+    // console.log(activeListIndex);
+    // console.log(activeCardIndex);
+  }
+
+  function handleOnDragEnd(event: any) {
+    console.log("Event:", event);
+    const { active, over } = event;
+
+    const activeListIndex = lists.findIndex((list) =>
+      list.cards.some((card) => card.cardID == active.id)
+    );
+
+    const activeCardIndex = lists[activeListIndex].cards.findIndex(
+      (card) => card.cardID == active.id
+    );
+
+    const overListIndex = lists.findIndex((list) =>
+      list.cards.some((card) => card.cardID == over.id)
+    );
+
+    const overCardIndex = lists[overListIndex].cards.findIndex(
+      (card) => card.cardID == over.id
+    );
+
+    console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
+    console.log("Over", lists[overListIndex].cards[overCardIndex]);
+
+    if (active.id != over.id) {
+      let newLists: listType[] = [...lists];
+      let remove = false;
+
+      if (lists[overListIndex].isEmpty) {
+        remove = true;
+      }
+
+      if (lists[activeListIndex] == lists[overListIndex]) {
+        const sortedCards = arrayMove(
+          lists[activeListIndex].cards,
+          activeCardIndex,
+          overCardIndex
+        );
+
+        newLists[activeListIndex].cards = sortedCards;
+        setLists(newLists);
+      } else {
+        if (
+          overCardIndex != 0 &&
+          overCardIndex != lists[overListIndex].cards.length - 1
+        ) {
+          newLists[overListIndex].cards.splice(
+            overCardIndex,
+            0,
+            lists[activeListIndex].cards[activeCardIndex]
+          );
+          newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+
+          if (newLists[activeListIndex].cards.length == 0) {
+            newLists[activeListIndex].isEmpty = true;
+            newLists[activeListIndex].cards.push({
+              cardTitle: "",
+              cardDescription: "",
+              cardID: Date.now().toString(),
+              alpha: 0,
+            });
+          }
+          setLists(newLists);
+        } else {
+          if (overCardIndex == 0) {
+            let newCards: cardType[] = [];
+            if (remove) {
+              newCards = [newLists[activeListIndex].cards[activeCardIndex]];
+              newLists[overListIndex].isEmpty = false;
+            } else {
+              newCards = [
+                newLists[activeListIndex].cards[activeCardIndex],
+                ...newLists[overListIndex].cards,
+              ];
+            }
+            newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+
+            if (newLists[activeListIndex].cards.length == 0) {
+              newLists[activeListIndex].isEmpty = true;
+              newLists[activeListIndex].cards.push({
+                cardTitle: "",
+                cardDescription: "",
+                cardID: Date.now().toString(),
+                alpha: 0,
+              });
+            }
+            newLists[overListIndex].cards = newCards;
+            setLists(newLists);
+          }
+
+          if (!remove) {
+            if (overCardIndex == lists[overListIndex].cards.length - 1) {
+              let newCards: cardType[] = [];
+              newCards = [
+                ...newLists[overListIndex].cards,
+                newLists[activeListIndex].cards[activeCardIndex],
+              ];
+              newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+
+              if (newLists[activeListIndex].cards.length == 0) {
+                newLists[activeListIndex].isEmpty = true;
+                newLists[activeListIndex].cards.push({
+                  cardTitle: "",
+                  cardDescription: "",
+                  cardID: Date.now().toString(),
+                  alpha: 0,
+                });
+              }
+              newLists[overListIndex].cards = newCards;
+              setLists(newLists);
+            }
+          }
+        }
+      }
+
+      // console.log(lists[0].cards[activeCard]);
+    }
+    // setActiveListID(null);
+    // setActiveCardID(null);
+    setActiveId(null);
+  }
 }
