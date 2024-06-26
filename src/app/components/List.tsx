@@ -27,6 +27,7 @@ function List(props: any, ref: any) {
     cardID: string;
     cardTitle: string;
     cardDescription: string;
+    alpha: number;
   };
 
   const cards: cardType[] = props.card;
@@ -89,6 +90,7 @@ function List(props: any, ref: any) {
                     id={card.cardID}
                     title={card.cardTitle}
                     description={card.cardDescription}
+                    alpha={card.alpha}
                   />
                 ))}
 

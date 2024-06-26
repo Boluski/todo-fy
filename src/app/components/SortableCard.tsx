@@ -12,7 +12,11 @@ export default function SortableCard(props: any) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Card title={props.title} description={props.description} />
+      <Card
+        title={props.title}
+        description={props.description}
+        alpha={props.alpha}
+      />
     </div>
   );
 }

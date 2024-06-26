@@ -20,6 +20,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import SortableList from "../../components/SortableList";
+import { randomUUID } from "crypto";
 
 Amplify.configure(config);
 export default function Project({ params }: { params: { id: string } }) {
@@ -40,11 +41,13 @@ export default function Project({ params }: { params: { id: string } }) {
     cardID: string;
     cardTitle: string;
     cardDescription: string;
+    alpha: number;
   };
 
   type listType = {
     listID: string;
     listTitle: string;
+    isEmpty: boolean;
     cards: cardType[];
   };
 
@@ -52,6 +55,7 @@ export default function Project({ params }: { params: { id: string } }) {
     {
       listID: "1",
       listTitle: "In Queue",
+      isEmpty: false,
       cards: [
         {
           cardID: "A1",
@@ -59,22 +63,26 @@ export default function Project({ params }: { params: { id: string } }) {
           cardDescription: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
                     molestias aliquam quasi delectus, deserunt obcaecati veniam qui
                     dicta repellat nisi debitis.`,
+          alpha: 1,
         },
         {
           cardID: "A2",
           cardTitle: "landing page backend",
           cardDescription: ``,
+          alpha: 1,
         },
         {
           cardID: "A3",
           cardTitle: "testing",
           cardDescription: ``,
+          alpha: 1,
         },
       ],
     },
     {
       listID: "2",
       listTitle: "Started",
+      isEmpty: false,
       cards: [
         {
           cardID: "B1",
@@ -82,11 +90,13 @@ export default function Project({ params }: { params: { id: string } }) {
           cardDescription: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
                     molestias aliquam quasi delectus, deserunt obcaecati veniam qui
                     dicta repellat nisi debitis.`,
+          alpha: 1,
         },
         {
           cardID: "B2",
           cardTitle: "Coollade guy",
           cardDescription: ``,
+          alpha: 1,
         },
       ],
     },
@@ -266,24 +276,29 @@ export default function Project({ params }: { params: { id: string } }) {
     console.log("Event:", event);
     const { active, over } = event;
 
+    const activeListIndex = lists.findIndex((list) =>
+      list.cards.some((card) => card.cardID == active.id)
+    );
+    const activeCardIndex = lists[activeListIndex].cards.findIndex(
+      (card) => card.cardID == active.id
+    );
+
+    const overListIndex = lists.findIndex((list) =>
+      list.cards.some((card) => card.cardID == over.id)
+    );
+    const overCardIndex = lists[overListIndex].cards.findIndex(
+      (card) => card.cardID == over.id
+    );
+
+    console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
+    console.log("Over", lists[overListIndex].cards[overCardIndex]);
+
     if (active.id != over.id) {
-      const activeListIndex = lists.findIndex((list) =>
-        list.cards.some((card) => card.cardID == active.id)
-      );
-      const activeCardIndex = lists[activeListIndex].cards.findIndex(
-        (card) => card.cardID == active.id
-      );
-
-      const overListIndex = lists.findIndex((list) =>
-        list.cards.some((card) => card.cardID == over.id)
-      );
-      const overCardIndex = lists[overListIndex].cards.findIndex(
-        (card) => card.cardID == over.id
-      );
-
-      console.log("Active", lists[activeListIndex].cards[activeCardIndex]);
-      console.log("Over", lists[overListIndex].cards[overCardIndex]);
-
+      let newLists: listType[] = [...lists];
+      let remove = false;
+      if (lists[overListIndex].isEmpty) {
+        remove = true;
+      }
       if (lists[activeListIndex] == lists[overListIndex]) {
         const sortedCards = arrayMove(
           lists[activeListIndex].cards,
@@ -291,13 +306,65 @@ export default function Project({ params }: { params: { id: string } }) {
           overCardIndex
         );
 
-        let newLists: listType[] = { ...lists };
         newLists[activeListIndex].cards = sortedCards;
-        setLists(Object.values(newLists));
+        setLists(newLists);
         console.log(lists);
+      } else {
+        if (overCardIndex == 0) {
+          let newCards: cardType[] = [];
+          if (remove) {
+            newCards = [newLists[activeListIndex].cards[activeCardIndex]];
+            newLists[overListIndex].isEmpty = false;
+          } else {
+            newCards = [
+              newLists[activeListIndex].cards[activeCardIndex],
+              ...newLists[overListIndex].cards,
+            ];
+          }
+
+          newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+          if (newLists[activeListIndex].cards.length == 0) {
+            newLists[activeListIndex].isEmpty = true;
+            newLists[activeListIndex].cards.push({
+              cardTitle: "",
+              cardDescription: "",
+              cardID: Date.now().toString(),
+              alpha: 0,
+            });
+          }
+
+          newLists[overListIndex].cards = newCards;
+          setLists(newLists);
+        }
+
+        if (!remove) {
+          if (overCardIndex == lists[overListIndex].cards.length - 1) {
+            let newCards: cardType[] = [];
+
+            newCards = [
+              ...newLists[overListIndex].cards,
+              newLists[activeListIndex].cards[activeCardIndex],
+            ];
+
+            newLists[activeListIndex].cards.splice(activeCardIndex, 1);
+            if (newLists[activeListIndex].cards.length == 0) {
+              newLists[activeListIndex].isEmpty = true;
+              newLists[activeListIndex].cards.push({
+                cardTitle: "",
+                cardDescription: "",
+                cardID: Date.now().toString(),
+                alpha: 0,
+              });
+            }
+
+            newLists[overListIndex].cards = newCards;
+            setLists(newLists);
+          }
+        }
       }
 
       // console.log(lists[0].cards[activeCard]);
+    } else {
     }
   }
 
@@ -362,6 +429,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     cardTitle: card.cardTitle,
                     cardDescription: card.cardDescription,
                     cardID: card.cardID,
+                    alpha: card.alpha,
                   }))}
                 />
               ))}
