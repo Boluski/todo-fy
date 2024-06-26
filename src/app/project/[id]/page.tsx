@@ -209,7 +209,7 @@ export default function Project({ params }: { params: { id: string } }) {
               </SortableContext>
             </DndContext>
 
-            <AddListBtn />
+            <AddListBtn lists={lists} setLists={setLists} />
           </Group>
         </ScrollArea>
       </Stack>
@@ -321,7 +321,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 newLists[activeListIndex].cards.push({
                   cardTitle: "",
                   cardDescription: "",
-                  cardID: Date.now().toString(),
+                  cardID: `C${Date.now()}`,
                   alpha: 0,
                 });
               }
@@ -345,7 +345,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   newLists[activeListIndex].cards.push({
                     cardTitle: "",
                     cardDescription: "",
-                    cardID: Date.now().toString(),
+                    cardID: `C${Date.now()}`,
                     alpha: 0,
                   });
                 }
@@ -367,7 +367,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     newLists[activeListIndex].cards.push({
                       cardTitle: "",
                       cardDescription: "",
-                      cardID: Date.now().toString(),
+                      cardID: `C${Date.now()}`,
                       alpha: 0,
                     });
                   }

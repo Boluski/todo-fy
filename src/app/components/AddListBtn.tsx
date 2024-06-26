@@ -9,9 +9,28 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IoMdAdd } from "react-icons/io";
 import { xray } from "../utils/xray";
+import { useState } from "react";
 
-export default function AddListBtn() {
+export default function AddListBtn(props: any) {
   const [opened, { toggle }] = useDisclosure(false);
+  const [listTitle, setListTitle] = useState("");
+
+  const lists: listType[] = props.lists;
+
+  type cardType = {
+    cardID: string;
+    cardTitle: string;
+    cardDescription: string;
+    alpha: number;
+  };
+
+  type listType = {
+    listID: string;
+    listTitle: string;
+    isEmpty: boolean;
+    cards: cardType[];
+  };
+
   return (
     <Paper shadow="md">
       <Stack
@@ -36,10 +55,40 @@ export default function AddListBtn() {
               variant="filled"
               size="md"
               placeholder="Enter List Name"
+              onChange={(e) => setListTitle(e.currentTarget.value)}
+              onKeyDownCapture={(e) => {
+                if (e.key == "Enter") {
+                  handleNewList();
+                  e.currentTarget.value = "";
+                }
+              }}
             />
           </FocusTrap>
         </Collapse>
       </Stack>
     </Paper>
   );
+
+  function handleNewList() {
+    let newLists: listType[] = [
+      ...lists,
+      {
+        listID: `L${Date.now()}`,
+        listTitle: listTitle,
+        cards: [
+          {
+            cardTitle: "",
+            cardDescription: "",
+            cardID: `C${Date.now()}`,
+            alpha: 0,
+          },
+        ],
+        isEmpty: true,
+      },
+    ];
+
+    console.log(newLists);
+    props.setLists(newLists);
+    // setListTitle("");
+  }
 }

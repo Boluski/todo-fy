@@ -31,7 +31,6 @@ function List(props: any, ref: any) {
   };
 
   const cards: cardType[] = props.card;
-  console.log("Cards:", cards);
 
   // function handleDragStart(event: any) {
   //   const { active } = event;
