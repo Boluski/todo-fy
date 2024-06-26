@@ -74,7 +74,7 @@ function List(props: any, ref: any) {
               </ActionIcon>
             </Group>
 
-            <Stack w={"100%"} mih={"20rem"} p={10} bg={"gray.2"}>
+            <Stack w={"100%"} mih={"5rem"} p={10} bg={"gray.2"}>
               {/* <DndContext
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}

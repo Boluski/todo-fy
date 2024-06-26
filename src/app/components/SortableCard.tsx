@@ -10,10 +10,9 @@ export default function SortableCard(props: any) {
     setNodeRef,
     transform,
     transition,
-    node,
   } = useSortable({ id: props.id });
   const style = {
-    opacity: isDragging ? 0.4 : undefined,
+    opacity: isDragging ? 0.6 : undefined,
     transform: CSS.Transform.toString(transform),
     transition,
   };
