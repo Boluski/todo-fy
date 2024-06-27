@@ -58,7 +58,7 @@ app.get("/TODO-fy/users", function (req, res) {
 
 app.get("/TODO-fy/getProject", function (req, res) {
   connection.execute(
-    "SELECT * from Projects WHERE PID = ?",
+    "SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary ,Projects.owner FROM todo_fy.Projects Inner join Theme on Projects.theme = Theme.TID where PID =?",
     [Number(req.query.PID)],
     function (error, result, fields) {
       if (error) {

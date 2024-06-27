@@ -4,10 +4,10 @@ import config from "../../../aws-exports";
 import { Amplify } from "aws-amplify";
 import { get } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
 
-import { Group, Stack, ScrollArea } from "@mantine/core";
+import { Group, Stack, ScrollArea, LoadingOverlay } from "@mantine/core";
 
 import { listType, cardType } from "../../utils/todofyTypes";
 
@@ -30,16 +30,24 @@ import {
 } from "@dnd-kit/sortable";
 import SortableList from "../../components/SortableList";
 import Card from "../../components/Card";
+import { useDisclosure } from "@mantine/hooks";
 
 Amplify.configure(config);
+
 export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   const projectID = params.id;
+  const id = useId();
+
+  const [loading, { toggle }] = useDisclosure(true);
+
+  const [projectName, setProjectName] = useState("");
+  const [mainTheme, setMainTheme] = useState("");
+  const [secondaryTheme, setSecondaryTheme] = useState("");
 
   const [activeId, setActiveId] = useState(null);
   const [activeId_Card, setActiveId_Card] = useState(null);
-
   const [activeListID, setActiveListID] = useState(0);
   const [activeCardID, setActiveCardID] = useState(0);
 
@@ -99,7 +107,14 @@ export default function Project({ params }: { params: { id: string } }) {
   type sqlData = {
     isError: true;
     errorMes: string;
-    result: [{ owner: string }];
+    result: [
+      {
+        owner: string;
+        title: string;
+        main: string;
+        secondary: string;
+      }
+    ];
     fields: object;
   };
 
@@ -130,10 +145,16 @@ export default function Project({ params }: { params: { id: string } }) {
       }
 
       const owner = response.result[0].owner;
+      console.log(response.result);
 
       if (owner == username) {
         console.log(owner);
         console.log(username);
+
+        setProjectName(response.result[0].title);
+        setMainTheme(response.result[0].main);
+        setSecondaryTheme(response.result[0].secondary);
+        toggle();
 
         console.log("user is authorized");
       } else {
@@ -156,11 +177,18 @@ export default function Project({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <Stack h={"100vh"} bg={"green.0"} p={10}>
-        <ProjectNav />
+      <Stack h={"100vh"} bg={secondaryTheme} p={10}>
+        <LoadingOverlay
+          visible={loading}
+          zIndex={1000}
+          overlayProps={{ blur: 6 }}
+          loaderProps={{ color: "green.8" }}
+        />
+        <ProjectNav projectName={projectName} mainTheme={mainTheme} />
         <ScrollArea type="never">
           <Group h={"100%"} align={"flex-start"} wrap="nowrap">
             <DndContext
+              id="draggable-tod0-fy"
               collisionDetection={closestCenter}
               onDragEnd={handleOnDragEnd}
               onDragStart={handleOnDragStart}
