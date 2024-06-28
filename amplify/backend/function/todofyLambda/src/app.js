@@ -159,13 +159,6 @@ app.get("/TODO-fy/getProjectResource", function (req, res) {
       }
     }
   );
-
-  // res.json({
-  //   isError: false,
-  //   errorMes: "Cool",
-  //   result: { cool: ["bolu"] },
-  //   // fields: fields,
-  // });
 });
 
 app.post("/TODO-fy/addUser", function (req, res) {
@@ -194,6 +187,10 @@ app.post("/TODO-fy/addProject", function (req, res) {
       }
     }
   );
+});
+
+app.put("/TODO-fy/updateProject", function (req, res) {
+  res.json({ sent: req.body });
 });
 
 //-------------------------------------------

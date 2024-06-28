@@ -2,7 +2,7 @@
 
 import config from "../../../aws-exports";
 import { Amplify } from "aws-amplify";
-import { get } from "aws-amplify/api";
+import { get, put } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useState, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
@@ -85,7 +85,7 @@ export default function Project({ params }: { params: { id: string } }) {
     }
 
     try {
-      console.log(projectID);
+      // console.log(projectID);
       const { username } = await getCurrentUser();
 
       const request = get({
@@ -107,8 +107,8 @@ export default function Project({ params }: { params: { id: string } }) {
       console.log(response.result);
 
       if (owner == username) {
-        console.log(owner);
-        console.log(username);
+        // console.log(owner);
+        // console.log(username);
 
         setProjectName(response.result[0].title);
         setMainTheme(response.result[0].main);
@@ -151,11 +151,7 @@ export default function Project({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    if (changeNumber == 10) {
-      console.log("Save changes now");
-    } else {
-      console.log("Don't save changes yet");
-    }
+    handleListChange();
   }, [changeNumber]);
 
   const sensors = useSensors(
@@ -193,6 +189,7 @@ export default function Project({ params }: { params: { id: string } }) {
                       key={list.listID}
                       id={list.listID}
                       projectID={projectID}
+                      setChangeNumber={setChangeNumber}
                       listTitle={list.listTitle}
                       lists={lists}
                       setLists={setLists}
@@ -239,6 +236,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
             <AddListBtn
               projectID={projectID}
+              setChangeNumber={setChangeNumber}
               lists={lists}
               setLists={setLists}
             />
@@ -292,11 +290,12 @@ export default function Project({ params }: { params: { id: string } }) {
       console.log("Over", lists[overListIndex]);
 
       const newLists = arrayMove(lists, activeListIndex, overListIndex);
-      console.log(">", newLists);
-      localStorage.setItem(projectID, JSON.stringify(newLists));
-      setLists(newLists);
-      console.log("->", newLists);
+      // console.log(">", newLists);
+      // console.log("->", newLists);
 
+      localStorage.setItem(projectID, JSON.stringify(newLists));
+      setChangeNumber((count: number) => count + 1);
+      setLists(newLists);
       setActiveId(null);
     } else {
       if (verifyOver.charAt(0) == "L" || verifyActive.charAt(0) == "L") {
@@ -337,6 +336,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
             newLists[activeListIndex].cards = sortedCards;
             localStorage.setItem(projectID, JSON.stringify(newLists));
+            setChangeNumber((count: number) => count + 1);
             setLists(newLists);
           } else {
             if (
@@ -360,6 +360,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 });
               }
               localStorage.setItem(projectID, JSON.stringify(newLists));
+              setChangeNumber((count: number) => count + 1);
               setLists(newLists);
             } else {
               if (overCardIndex == 0) {
@@ -386,6 +387,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 }
                 newLists[overListIndex].cards = newCards;
                 localStorage.setItem(projectID, JSON.stringify(newLists));
+                setChangeNumber((count: number) => count + 1);
                 setLists(newLists);
               }
 
@@ -409,6 +411,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   }
                   newLists[overListIndex].cards = newCards;
                   localStorage.setItem(projectID, JSON.stringify(newLists));
+                  setChangeNumber((count: number) => count + 1);
                   setLists(newLists);
                 }
               }
@@ -419,5 +422,26 @@ export default function Project({ params }: { params: { id: string } }) {
     }
 
     setActiveId_Card(null);
+  }
+
+  async function handleListChange() {
+    if (changeNumber == 3) {
+      console.log("Save changes now:", changeNumber);
+      console.log("Save:", lists);
+      const updateRequest = put({
+        apiName: "todofy",
+        path: "/TODO-fy/updateProject",
+        options: {
+          body: { projectID: projectID, board: lists },
+        },
+      });
+      const { body } = await updateRequest.response;
+
+      const test = await body.json();
+
+      console.log("UPDATE", test);
+    } else {
+      console.log("Don't save changes yet:", changeNumber);
+    }
   }
 }

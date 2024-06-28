@@ -4,7 +4,7 @@ import { listType, cardType } from "../utils/todofyTypes";
 
 export default function AddCardBtn(props: any) {
   // const lists: listType[] = [...props.lists]
-  console.log(props.listIndex);
+  // console.log(props.listIndex);
 
   const [cardTitle, setCardTitle] = useState("");
   return (
@@ -54,6 +54,7 @@ export default function AddCardBtn(props: any) {
     ];
 
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
+    props.setChangeNumber((count: number) => count + 1);
     props.setLists(newLists);
     props.setToggle();
   }

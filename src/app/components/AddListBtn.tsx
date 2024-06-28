@@ -74,9 +74,10 @@ export default function AddListBtn(props: any) {
       },
     ];
 
-    console.log(newLists);
+    // console.log(newLists);
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
     props.setLists(newLists);
+    props.setChangeNumber((count: number) => count + 1);
     // setListTitle("");
   }
 }

@@ -17,7 +17,7 @@ import AddCardBtn from "./AddCardBtn";
 export default function List(props: any) {
   const [opened, { toggle }] = useDisclosure(false);
   const cards: cardType[] = props.card;
-  console.log(">>>", props.listIndex);
+  // console.log(">>>", props.listIndex);
 
   // lists={props.lists}
   // setLists={props.setLists}
@@ -57,6 +57,7 @@ export default function List(props: any) {
               <AddCardBtn
                 display={opened}
                 setToggle={toggle}
+                setChangeNumber={props.setChangeNumber}
                 projectID={props.projectID}
                 lists={props.lists}
                 setLists={props.setLists}
