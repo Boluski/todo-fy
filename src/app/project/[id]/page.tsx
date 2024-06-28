@@ -134,7 +134,7 @@ export default function Project({ params }: { params: { id: string } }) {
         throw new TypeError("User is not authorized");
       }
     } catch (error) {
-      // router.push("/dashboard");
+      router.push("/dashboard");
       // console.log(error.message);
     }
   };

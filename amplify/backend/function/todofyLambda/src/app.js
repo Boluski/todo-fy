@@ -25,13 +25,13 @@ const mysqlConfig = {
   password: "todofy1234",
   port: "3306",
   database: "todo_fy",
-  waitForConnections: true,
-  connectionLimit: 10,
-  maxIdle: 10,
-  idleTimeout: 60000,
-  queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
+  // waitForConnections: true,
+  // connectionLimit: 10,
+  // maxIdle: 10,
+  // idleTimeout: 60000,
+  // queueLimit: 0,
+  // enableKeepAlive: true,
+  // keepAliveInitialDelay: 0,
 };
 
 // Enable CORS for all methods
@@ -41,7 +41,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-const connection = mysql.createPool(mysqlConfig);
+const connection = mysql.createConnection(mysqlConfig);
 /**********************
  * Example get method *
  **********************/
