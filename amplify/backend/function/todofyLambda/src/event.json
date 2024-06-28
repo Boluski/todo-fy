@@ -1,6 +1,6 @@
 {
   "httpMethod": "POST",
-  "path": "/item",
+  "path": "/TODO-fy/getProjectResource",
   "queryStringParameters": {
     "limit": "10"
   },

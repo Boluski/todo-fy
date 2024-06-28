@@ -6,7 +6,7 @@ or in the "license" file accompanying this file. This file is distributed on an 
 See the License for the specific language governing permissions and limitations under the License.
 */
 
-//TODO in the next version of the database:
+// TODO in the next version of the database:
 // Change Theme to Themes
 
 const express = require("express");
@@ -58,7 +58,10 @@ app.get("/TODO-fy/users", function (req, res) {
 
 app.get("/TODO-fy/getProject", function (req, res) {
   connection.execute(
-    "SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary ,Projects.owner FROM todo_fy.Projects Inner join Theme on Projects.theme = Theme.TID where PID =?",
+    `SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary, Projects.owner
+    FROM todo_fy.Projects
+    Inner join Theme on Projects.theme = Theme.TID
+    where PID =?`,
     [Number(req.query.PID)],
     function (error, result, fields) {
       if (error) {
@@ -73,6 +76,96 @@ app.get("/TODO-fy/getProject", function (req, res) {
       }
     }
   );
+});
+
+app.get("/TODO-fy/getProjectResource", function (req, res) {
+  let boardSchema = [];
+  let boardCards = [];
+
+  connection.execute(
+    "select * from todo_fy.Cards where PID = ? order by position",
+    [Number(req.query.PID)],
+    function (error, result, fields) {
+      if (error) {
+        return res.json({ isError: true, errorMes: error.message });
+      } else {
+        boardCards = result;
+      }
+    }
+  );
+
+  connection.execute(
+    "select * from todo_fy.Lists where PID = ? order by position",
+    [Number(req.query.PID)],
+    function (error, result, fields) {
+      if (error) {
+        res.json({ isError: true, errorMes: error.message });
+      } else {
+        try {
+          for (let i = 0; i < result.length; i++) {
+            let listCards = boardCards.filter(
+              (Card) => Card.LID == result[i].LID
+            );
+
+            let currentList = {};
+
+            if (listCards.length == 0) {
+              currentList = {
+                // boardCards: boardCards,
+
+                listID: `L${result[i].LID}`,
+                listTitle: result[i].listName,
+                isEmpty: true,
+                cards: [
+                  {
+                    cardID: `C${Date.now()}`,
+                    cardTitle: "",
+                    cardDescription: "",
+                    alpha: 0,
+                  },
+                ],
+              };
+            } else {
+              currentList = {
+                // boardCards: boardCards,
+                listID: `L${result[i].LID}`,
+                listTitle: result[i].listName,
+                isEmpty: false,
+
+                cards: listCards.map((card) => {
+                  return {
+                    listCards: listCards.length,
+                    cardID: `C${card.CID}`,
+                    cardTitle: card.cardName,
+                    cardDescription: card.description,
+                    alpha: 1,
+                  };
+                }),
+              };
+            }
+
+            boardSchema.push(currentList);
+          }
+
+          res.json({
+            isError: false,
+            errorMes: "",
+            result: boardSchema,
+            fields: fields,
+          });
+        } catch (error) {
+          res.json({ isError: true, errorMes: error.message });
+        }
+      }
+    }
+  );
+
+  // res.json({
+  //   isError: false,
+  //   errorMes: "Cool",
+  //   result: { cool: ["bolu"] },
+  //   // fields: fields,
+  // });
 });
 
 app.post("/TODO-fy/addUser", function (req, res) {
@@ -103,6 +196,8 @@ app.post("/TODO-fy/addProject", function (req, res) {
   );
 });
 
+//-------------------------------------------
+
 // app.get("/users/*", function (req, res) {
 //   // Add your code here
 //   res.json({
@@ -110,6 +205,18 @@ app.post("/TODO-fy/addProject", function (req, res) {
 //     url: req.url,
 //   });
 // });
+
+// {
+//   "httpMethod": "POST",
+//   "path": "/TODO-fy/getProjectResource",
+//   "queryStringParameters": {
+//     "limit": "10"
+//   },
+//   "headers": {
+//     "Content-Type": "application/json"
+//   },
+//   "body": "{\"msg\":\"Hello from the event.json body\"}"
+// }
 
 /****************************
  * Example post method *

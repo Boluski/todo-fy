@@ -40,6 +40,7 @@ export default function AddCardBtn(props: any) {
 
     if (newLists[props.listIndex].isEmpty) {
       newLists[props.listIndex].cards.pop();
+      newLists[props.listIndex].isEmpty = false;
     }
 
     newLists[props.listIndex].cards = [

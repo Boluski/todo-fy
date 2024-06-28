@@ -51,58 +51,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const [activeListID, setActiveListID] = useState(0);
   const [activeCardID, setActiveCardID] = useState(0);
 
-  let schema: listType[] = [
-    {
-      listID: "L1",
-      listTitle: "In Queue",
-      isEmpty: false,
-      cards: [
-        {
-          cardID: "C1",
-          cardTitle: "landing page ui",
-          cardDescription: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
-                    molestias aliquam quasi delectus, deserunt obcaecati veniam qui
-                    dicta repellat nisi debitis.`,
-          alpha: 1,
-        },
-        {
-          cardID: "C2",
-          cardTitle: "landing page backend",
-          cardDescription: ``,
-          alpha: 1,
-        },
-        {
-          cardID: "C3",
-          cardTitle: "testing",
-          cardDescription: ``,
-          alpha: 1,
-        },
-      ],
-    },
-    {
-      listID: "L2",
-      listTitle: "Started",
-      isEmpty: false,
-      cards: [
-        {
-          cardID: "C4",
-          cardTitle: "Cool Done",
-          cardDescription: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Impedit voluptate eveniet commodi maxime porro eius aut officia libero
-                    molestias aliquam quasi delectus, deserunt obcaecati veniam qui
-                    dicta repellat nisi debitis.`,
-          alpha: 1,
-        },
-        {
-          cardID: "C5",
-          cardTitle: "Coollade guy",
-          cardDescription: ``,
-          alpha: 1,
-        },
-      ],
-    },
-  ];
-
-  const [lists, setLists] = useState(schema);
+  const [lists, setLists] = useState<listType[]>([]);
 
   type sqlData = {
     isError: true;
@@ -115,6 +64,13 @@ export default function Project({ params }: { params: { id: string } }) {
         secondary: string;
       }
     ];
+    fields: object;
+  };
+
+  type sqlLists = {
+    isError: true;
+    errorMes: string;
+    result: listType[];
     fields: object;
   };
 
@@ -154,6 +110,23 @@ export default function Project({ params }: { params: { id: string } }) {
         setProjectName(response.result[0].title);
         setMainTheme(response.result[0].main);
         setSecondaryTheme(response.result[0].secondary);
+
+        const boardRequest = get({
+          apiName: "todofy",
+          path: "/TODO-fy/getProjectResource",
+          options: { queryParams: { PID: projectID } },
+        });
+
+        const { body } = await boardRequest.response;
+        const boardResponse = (await body.json()) as sqlLists;
+
+        if (boardResponse.isError) {
+          throw new Error(response.errorMes);
+        }
+
+        console.log("Server:", boardResponse.result);
+
+        setLists(boardResponse.result);
         toggle();
 
         console.log("user is authorized");
@@ -161,7 +134,8 @@ export default function Project({ params }: { params: { id: string } }) {
         throw new TypeError("User is not authorized");
       }
     } catch (error) {
-      router.push("/dashboard");
+      // router.push("/dashboard");
+      // console.log(error.message);
     }
   };
 
@@ -187,60 +161,66 @@ export default function Project({ params }: { params: { id: string } }) {
         <ProjectNav projectName={projectName} mainTheme={mainTheme} />
         <ScrollArea type="never">
           <Group h={"100%"} align={"flex-start"} wrap="nowrap">
-            <DndContext
-              id="draggable-tod0-fy"
-              collisionDetection={closestCenter}
-              onDragEnd={handleOnDragEnd}
-              onDragStart={handleOnDragStart}
-              sensors={sensors}
-            >
-              <SortableContext
-                items={lists.map((list) => list.listID)}
-                strategy={horizontalListSortingStrategy}
+            {lists?.length != 0 ? (
+              <DndContext
+                id="draggable-tod0-fy"
+                collisionDetection={closestCenter}
+                onDragEnd={handleOnDragEnd}
+                onDragStart={handleOnDragStart}
+                sensors={sensors}
               >
-                {lists.map((list, index) => (
-                  <SortableList
-                    key={list.listID}
-                    id={list.listID}
-                    listTitle={list.listTitle}
-                    lists={lists}
-                    setLists={setLists}
-                    listIndex={index}
-                    items={list.cards?.map((card) => card.cardID)}
-                    card={list.cards?.map((card) => ({
-                      cardTitle: card.cardTitle,
-                      cardDescription: card.cardDescription,
-                      cardID: card.cardID,
-                      alpha: card.alpha,
-                    }))}
-                  />
-                ))}
-
-                <DragOverlay>
-                  {activeId_Card ? (
-                    <Card
-                      title={lists[activeListID].cards[activeCardID].cardTitle}
-                      description={
-                        lists[activeListID].cards[activeCardID].cardDescription
-                      }
-                      alpha={"1"}
-                    />
-                  ) : null}
-
-                  {activeId ? (
-                    <List
-                      listTitle={lists[activeListID].listTitle}
-                      card={lists[activeListID].cards.map((card) => ({
+                <SortableContext
+                  items={lists.map((list) => list.listID)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  {lists.map((list, index) => (
+                    <SortableList
+                      key={list.listID}
+                      id={list.listID}
+                      listTitle={list.listTitle}
+                      lists={lists}
+                      setLists={setLists}
+                      listIndex={index}
+                      items={list.cards?.map((card) => card.cardID)}
+                      card={list.cards?.map((card) => ({
                         cardTitle: card.cardTitle,
                         cardDescription: card.cardDescription,
                         cardID: card.cardID,
                         alpha: card.alpha,
                       }))}
                     />
-                  ) : null}
-                </DragOverlay>
-              </SortableContext>
-            </DndContext>
+                  ))}
+
+                  <DragOverlay>
+                    {activeId_Card ? (
+                      <Card
+                        title={
+                          lists[activeListID].cards[activeCardID].cardTitle
+                        }
+                        description={
+                          lists[activeListID].cards[activeCardID]
+                            .cardDescription
+                        }
+                        alpha={"1"}
+                      />
+                    ) : null}
+
+                    {activeId ? (
+                      <List
+                        listTitle={lists[activeListID].listTitle}
+                        card={lists[activeListID].cards.map((card) => ({
+                          cardTitle: card.cardTitle,
+                          cardDescription: card.cardDescription,
+                          cardID: card.cardID,
+                          alpha: card.alpha,
+                        }))}
+                      />
+                    ) : null}
+                  </DragOverlay>
+                </SortableContext>
+              </DndContext>
+            ) : null}
+
             <AddListBtn lists={lists} setLists={setLists} />
           </Group>
         </ScrollArea>
