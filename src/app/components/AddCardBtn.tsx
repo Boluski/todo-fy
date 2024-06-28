@@ -53,6 +53,7 @@ export default function AddCardBtn(props: any) {
       },
     ];
 
+    localStorage.setItem(props.projectID, JSON.stringify(newLists));
     props.setLists(newLists);
     props.setToggle();
   }

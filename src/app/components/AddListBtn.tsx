@@ -75,6 +75,7 @@ export default function AddListBtn(props: any) {
     ];
 
     console.log(newLists);
+    localStorage.setItem(props.projectID, JSON.stringify(newLists));
     props.setLists(newLists);
     // setListTitle("");
   }

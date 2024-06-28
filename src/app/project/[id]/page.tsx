@@ -52,6 +52,9 @@ export default function Project({ params }: { params: { id: string } }) {
   const [activeCardID, setActiveCardID] = useState(0);
 
   const [lists, setLists] = useState<listType[]>([]);
+  const [changeNumber, setChangeNumber] = useState(0);
+
+  let board: listType[];
 
   type sqlData = {
     isError: true;
@@ -111,22 +114,26 @@ export default function Project({ params }: { params: { id: string } }) {
         setMainTheme(response.result[0].main);
         setSecondaryTheme(response.result[0].secondary);
 
-        const boardRequest = get({
-          apiName: "todofy",
-          path: "/TODO-fy/getProjectResource",
-          options: { queryParams: { PID: projectID } },
-        });
-
-        const { body } = await boardRequest.response;
-        const boardResponse = (await body.json()) as sqlLists;
-
-        if (boardResponse.isError) {
-          throw new Error(response.errorMes);
+        if (localStorage.getItem(projectID) == null) {
+          const boardRequest = get({
+            apiName: "todofy",
+            path: "/TODO-fy/getProjectResource",
+            options: { queryParams: { PID: projectID } },
+          });
+          const { body } = await boardRequest.response;
+          const boardResponse = (await body.json()) as sqlLists;
+          if (boardResponse.isError) {
+            throw new Error(response.errorMes);
+          }
+          board = boardResponse.result;
+          localStorage.setItem(projectID, JSON.stringify(board));
+        } else {
+          board = JSON.parse(
+            localStorage.getItem(projectID) as string
+          ) as listType[];
         }
 
-        console.log("Server:", boardResponse.result);
-
-        setLists(boardResponse.result);
+        setLists(board);
         toggle();
 
         console.log("user is authorized");
@@ -142,6 +149,14 @@ export default function Project({ params }: { params: { id: string } }) {
   useEffect(() => {
     isAuthorized();
   }, []);
+
+  useEffect(() => {
+    if (changeNumber == 10) {
+      console.log("Save changes now");
+    } else {
+      console.log("Don't save changes yet");
+    }
+  }, [changeNumber]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -177,6 +192,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     <SortableList
                       key={list.listID}
                       id={list.listID}
+                      projectID={projectID}
                       listTitle={list.listTitle}
                       lists={lists}
                       setLists={setLists}
@@ -221,7 +237,11 @@ export default function Project({ params }: { params: { id: string } }) {
               </DndContext>
             ) : null}
 
-            <AddListBtn lists={lists} setLists={setLists} />
+            <AddListBtn
+              projectID={projectID}
+              lists={lists}
+              setLists={setLists}
+            />
           </Group>
         </ScrollArea>
       </Stack>
@@ -273,6 +293,7 @@ export default function Project({ params }: { params: { id: string } }) {
 
       const newLists = arrayMove(lists, activeListIndex, overListIndex);
       console.log(">", newLists);
+      localStorage.setItem(projectID, JSON.stringify(newLists));
       setLists(newLists);
       console.log("->", newLists);
 
@@ -315,6 +336,7 @@ export default function Project({ params }: { params: { id: string } }) {
             );
 
             newLists[activeListIndex].cards = sortedCards;
+            localStorage.setItem(projectID, JSON.stringify(newLists));
             setLists(newLists);
           } else {
             if (
@@ -337,6 +359,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   alpha: 0,
                 });
               }
+              localStorage.setItem(projectID, JSON.stringify(newLists));
               setLists(newLists);
             } else {
               if (overCardIndex == 0) {
@@ -362,6 +385,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   });
                 }
                 newLists[overListIndex].cards = newCards;
+                localStorage.setItem(projectID, JSON.stringify(newLists));
                 setLists(newLists);
               }
 
@@ -384,6 +408,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     });
                   }
                   newLists[overListIndex].cards = newCards;
+                  localStorage.setItem(projectID, JSON.stringify(newLists));
                   setLists(newLists);
                 }
               }

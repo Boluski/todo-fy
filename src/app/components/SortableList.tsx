@@ -22,6 +22,7 @@ export default function SortableList(props: any) {
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <List
+        projectID={props.projectID}
         listIndex={props.listIndex}
         listTitle={props.listTitle}
         card={props.card}

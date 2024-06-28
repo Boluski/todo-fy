@@ -57,6 +57,7 @@ export default function List(props: any) {
               <AddCardBtn
                 display={opened}
                 setToggle={toggle}
+                projectID={props.projectID}
                 lists={props.lists}
                 setLists={props.setLists}
                 listIndex={props.listIndex}
