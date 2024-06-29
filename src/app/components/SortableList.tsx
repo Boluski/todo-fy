@@ -24,6 +24,8 @@ export default function SortableList(props: any) {
       <List
         projectID={props.projectID}
         setChangeNumber={props.setChangeNumber}
+        changeLog={props.changeLog}
+        setChangeLog={props.setChangeLog}
         listIndex={props.listIndex}
         listTitle={props.listTitle}
         card={props.card}

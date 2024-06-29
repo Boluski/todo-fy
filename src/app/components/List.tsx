@@ -58,6 +58,8 @@ export default function List(props: any) {
                 display={opened}
                 setToggle={toggle}
                 setChangeNumber={props.setChangeNumber}
+                changeLog={props.changeLog}
+                setChangeLog={props.setChangeLog}
                 projectID={props.projectID}
                 lists={props.lists}
                 setLists={props.setLists}

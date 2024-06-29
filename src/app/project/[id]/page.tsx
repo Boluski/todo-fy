@@ -4,12 +4,12 @@ import config from "../../../aws-exports";
 import { Amplify } from "aws-amplify";
 import { get, put } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
-import { useState, useEffect, useId } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { Group, Stack, ScrollArea, LoadingOverlay } from "@mantine/core";
 
-import { listType, cardType } from "../../utils/todofyTypes";
+import { listType, cardType, changeLogType } from "../../utils/todofyTypes";
 
 import ProjectNav from "../../components/ProjectNav";
 import List from "../../components/List";
@@ -38,7 +38,6 @@ export default function Project({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   const projectID = params.id;
-  const id = useId();
 
   const [loading, { toggle }] = useDisclosure(true);
 
@@ -53,6 +52,10 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const [lists, setLists] = useState<listType[]>([]);
   const [changeNumber, setChangeNumber] = useState(0);
+  const [changeLog, setChangeLog] = useState<changeLogType>({
+    lists: { created: [], deleted: [] },
+    cards: { created: [], deleted: [] },
+  });
 
   let board: listType[];
 
@@ -127,12 +130,24 @@ export default function Project({ params }: { params: { id: string } }) {
           }
           board = boardResponse.result;
           localStorage.setItem(projectID, JSON.stringify(board));
+          localStorage.setItem(`CHL-${projectID}`, JSON.stringify(changeLog));
         } else {
           board = JSON.parse(
             localStorage.getItem(projectID) as string
           ) as listType[];
+
+          const latestChangeLog: changeLogType = JSON.parse(
+            localStorage.getItem(`CHL-${projectID}`) as string
+          );
+
+          console.log("From storage:", latestChangeLog);
+
+          setChangeLog(latestChangeLog);
         }
 
+        // setChangeLog(
+        //   JSON.parse(localStorage.getItem(`CHL-${projectID}`) as string)
+        // );
         setLists(board);
         toggle();
 
@@ -190,6 +205,8 @@ export default function Project({ params }: { params: { id: string } }) {
                       id={list.listID}
                       projectID={projectID}
                       setChangeNumber={setChangeNumber}
+                      changeLog={changeLog}
+                      setChangeLog={setChangeLog}
                       listTitle={list.listTitle}
                       lists={lists}
                       setLists={setLists}
@@ -236,6 +253,8 @@ export default function Project({ params }: { params: { id: string } }) {
 
             <AddListBtn
               projectID={projectID}
+              changeLog={changeLog}
+              setChangeLog={setChangeLog}
               setChangeNumber={setChangeNumber}
               lists={lists}
               setLists={setLists}
@@ -436,6 +455,7 @@ export default function Project({ params }: { params: { id: string } }) {
       //     body: { projectID: projectID, board: lists },
       //   },
       // });
+
       // const { body } = await updateRequest.response;
 
       // const test = await body.json();
@@ -444,5 +464,6 @@ export default function Project({ params }: { params: { id: string } }) {
     } else {
       console.log("Don't save changes yet:", changeNumber);
     }
+    console.log("Change Log:", changeLog);
   }
 }

@@ -9,7 +9,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IoMdAdd } from "react-icons/io";
 import { xray } from "../utils/xray";
-import { listType } from "../utils/todofyTypes";
+import { listType, changeLogType } from "../utils/todofyTypes";
 import { useState } from "react";
 
 export default function AddListBtn(props: any) {
@@ -57,10 +57,13 @@ export default function AddListBtn(props: any) {
   );
 
   function handleNewList() {
+    const uid = Date.now().toString();
+    let newChangeLog: changeLogType = { ...props.changeLog };
+
     let newLists: listType[] = [
       ...lists,
       {
-        listID: `L${Date.now()}`,
+        listID: `L${uid}`,
         listTitle: listTitle,
         cards: [
           {
@@ -74,8 +77,16 @@ export default function AddListBtn(props: any) {
       },
     ];
 
+    newChangeLog.lists.created.push(uid);
+
     // console.log(newLists);
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
+    localStorage.setItem(
+      `CHL-${props.projectID}`,
+      JSON.stringify(newChangeLog)
+    );
+
+    props.setChangeLog(newChangeLog);
     props.setLists(newLists);
     props.setChangeNumber((count: number) => count + 1);
     // setListTitle("");

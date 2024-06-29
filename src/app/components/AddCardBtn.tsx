@@ -1,6 +1,6 @@
 import { Paper, Center, TextInput, FocusTrap } from "@mantine/core";
 import { useState } from "react";
-import { listType, cardType } from "../utils/todofyTypes";
+import { listType, cardType, changeLogType } from "../utils/todofyTypes";
 
 export default function AddCardBtn(props: any) {
   // const lists: listType[] = [...props.lists]
@@ -36,6 +36,8 @@ export default function AddCardBtn(props: any) {
 
   function handleNewCard() {
     let newLists: listType[] = [...props.lists];
+    const uid = Date.now().toString();
+    let newChangeLog: changeLogType = { ...props.changeLog };
     console.log("card:", newLists[props.listIndex].cards);
 
     if (newLists[props.listIndex].isEmpty) {
@@ -46,14 +48,21 @@ export default function AddCardBtn(props: any) {
     newLists[props.listIndex].cards = [
       ...newLists[props.listIndex].cards,
       {
-        cardID: `C${Date.now()}`,
+        cardID: `C${uid}`,
         cardTitle: cardTitle,
         cardDescription: ``,
         alpha: 1,
       },
     ];
+    newChangeLog.cards.created.push(uid);
 
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
+    localStorage.setItem(
+      `CHL-${props.projectID}`,
+      JSON.stringify(newChangeLog)
+    );
+
+    props.setChangeLog(newChangeLog);
     props.setChangeNumber((count: number) => count + 1);
     props.setLists(newLists);
     props.setToggle();
