@@ -425,21 +425,22 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   async function handleListChange() {
-    if (changeNumber == 3) {
+    if (changeNumber == 10) {
       console.log("Save changes now:", changeNumber);
       console.log("Save:", lists);
-      const updateRequest = put({
-        apiName: "todofy",
-        path: "/TODO-fy/updateProject",
-        options: {
-          body: { projectID: projectID, board: lists },
-        },
-      });
-      const { body } = await updateRequest.response;
+      setChangeNumber(0);
+      // const updateRequest = put({
+      //   apiName: "todofy",
+      //   path: "/TODO-fy/updateProject",
+      //   options: {
+      //     body: { projectID: projectID, board: lists },
+      //   },
+      // });
+      // const { body } = await updateRequest.response;
 
-      const test = await body.json();
+      // const test = await body.json();
 
-      console.log("UPDATE", test);
+      // console.log("UPDATE", test);
     } else {
       console.log("Don't save changes yet:", changeNumber);
     }
