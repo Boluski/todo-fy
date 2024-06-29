@@ -443,7 +443,7 @@ export default function Project({ params }: { params: { id: string } }) {
   }
 
   async function handleListChange() {
-    if (changeNumber == 10) {
+    if (changeNumber == 5) {
       console.log("Save changes now:", changeNumber);
       console.log("Save:", lists);
 

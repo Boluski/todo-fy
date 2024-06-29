@@ -34,6 +34,12 @@ const mysqlConfig = {
   // keepAliveInitialDelay: 0,
 };
 
+function generateID() {
+  const min = 1;
+  const max = 2147483647;
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 // Enable CORS for all methods
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -54,14 +60,6 @@ app.get("/TODO-fy/users", async function (req, res) {
   } catch (error) {
     res.json({ error: error });
   }
-
-  // connection.execute("SELECT * from Users", function (error, result, fields) {
-  //   if (error) {
-  //     res.json({ error: error });
-  //   } else {
-  //     res.json({ result: result, fields: fields });
-  //   }
-  // });
 });
 
 app.get("/TODO-fy/getProject", async function (req, res) {
@@ -83,26 +81,6 @@ app.get("/TODO-fy/getProject", async function (req, res) {
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });
   }
-
-  // connection.execute(
-  //   `SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary, Projects.owner
-  //   FROM todo_fy.Projects
-  //   Inner join Theme on Projects.theme = Theme.TID
-  //   where PID =?`,
-  //   [Number(req.query.PID)],
-  //   function (error, result, fields) {
-  //     if (error) {
-  //       res.json({ isError: true, errorMes: error.message });
-  //     } else {
-  //       res.json({
-  //         isError: false,
-  //         errorMes: "",
-  //         result: result,
-  //         fields: fields,
-  //       });
-  //     }
-  //   }
-  // );
 });
 
 app.get("/TODO-fy/getProjectResource", async function (req, res) {
@@ -119,18 +97,6 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });
   }
-
-  // connection.execute(
-  //   "select * from todo_fy.Cards where PID = ? order by position",
-  //   [Number(req.query.PID)],
-  //   function (error, result, fields) {
-  //     if (error) {
-  //       return res.json({ isError: true, errorMes: error.message });
-  //     } else {
-  //       boardCards = result;
-  //     }
-  //   }
-  // );
 
   try {
     const [result, fields] = await connection.execute(
@@ -152,7 +118,7 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
           isEmpty: true,
           cards: [
             {
-              cardID: `C${Date.now()}`,
+              cardID: `C${generateID()}`,
               cardTitle: "",
               cardDescription: "",
               alpha: 0,
@@ -190,72 +156,6 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });
   }
-
-  // connection.execute(
-  //   "select * from todo_fy.Lists where PID = ? order by position",
-  //   [Number(req.query.PID)],
-  //   function (error, result, fields) {
-  //     if (error) {
-  //       res.json({ isError: true, errorMes: error.message });
-  //     } else {
-  //       try {
-  //         for (let i = 0; i < result.length; i++) {
-  //           let listCards = boardCards.filter(
-  //             (Card) => Card.LID == result[i].LID
-  //           );
-
-  //           let currentList = {};
-
-  //           if (listCards.length == 0) {
-  //             currentList = {
-  //               // boardCards: boardCards,
-
-  //               listID: `L${result[i].LID}`,
-  //               listTitle: result[i].listName,
-  //               isEmpty: true,
-  //               cards: [
-  //                 {
-  //                   cardID: `C${Date.now()}`,
-  //                   cardTitle: "",
-  //                   cardDescription: "",
-  //                   alpha: 0,
-  //                 },
-  //               ],
-  //             };
-  //           } else {
-  //             currentList = {
-  //               // boardCards: boardCards,
-  //               listID: `L${result[i].LID}`,
-  //               listTitle: result[i].listName,
-  //               isEmpty: false,
-
-  //               cards: listCards.map((card) => {
-  //                 return {
-  //                   listCards: listCards.length,
-  //                   cardID: `C${card.CID}`,
-  //                   cardTitle: card.cardName,
-  //                   cardDescription: card.description,
-  //                   alpha: 1,
-  //                 };
-  //               }),
-  //             };
-  //           }
-
-  //           boardSchema.push(currentList);
-  //         }
-
-  //         res.json({
-  //           isError: false,
-  //           errorMes: "",
-  //           result: boardSchema,
-  //           fields: fields,
-  //         });
-  //       } catch (error) {
-  //         res.json({ isError: true, errorMes: error.message });
-  //       }
-  //     }
-  //   }
-  // );
 });
 
 app.post("/TODO-fy/addUser", async function (req, res) {
@@ -269,18 +169,6 @@ app.post("/TODO-fy/addUser", async function (req, res) {
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });
   }
-
-  // connection.execute(
-  //   "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
-  //   [req.body.username, req.body.email, req.body.displayName],
-  //   function (error, result, fields) {
-  //     if (error) {
-  //       res.json({ error: error });
-  //     } else {
-  //       res.json({ result: result, fields: fields });
-  //     }
-  //   }
-  // );
 });
 
 app.post("/TODO-fy/addProject", async function (req, res) {
@@ -294,18 +182,6 @@ app.post("/TODO-fy/addProject", async function (req, res) {
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });
   }
-
-  // connection.execute(
-  //   "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
-  //   [req.body.title, req.body.theme, req.body.owner],
-  //   function (error, result, fields) {
-  //     if (error) {
-  //       res.json({ error: error });
-  //     } else {
-  //       res.json({ result: result, fields: fields });
-  //     }
-  //   }
-  // );
 });
 
 app.post("/TODO-fy/updateProject", async function (req, res) {
@@ -342,25 +218,78 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
           "insert into todo_fy.Lists(LID, listName, position, PID) values(?, ?, ?, ?)",
           [Number(listID), currentList.listTitle, position, Number(projectID)]
         );
-
         created++;
+
+        if (!currentList.isEmpty) {
+          for (let j = 0; j < currentList.cards.length; j++) {
+            const currentCard = currentList.cards[j];
+            console.log(currentCard);
+            const cardPosition = j + 1;
+            const cardID = currentCard.cardID.replace("C", "");
+            let cardSearch = changeLog.cards.created.filter(
+              (card) => card == cardID
+            );
+            console.log("card Search:", cardSearch);
+            if (cardSearch.length == 1) {
+              console.log("Create card");
+
+              try {
+                const [result, fields] = await connection.execute(
+                  `
+                  insert into todo_fy.Cards(CID, cardName, description, position, LID, PID)
+                  values(?, ?, ?, ?, ?, ?)`,
+                  [
+                    Number(cardID),
+                    currentCard.cardTitle,
+                    currentCard.cardDescription,
+                    cardPosition,
+                    listID,
+                    projectID,
+                  ]
+                );
+                created++;
+              } catch (error) {
+                console.log("Error:", error);
+                res.json({ isError: true, errorMes: error.message });
+              }
+            } else {
+              let cardSearch = changeLog.cards.deleted.filter(
+                (card) => card == cardID
+              );
+
+              if (cardSearch.length == 1) {
+                // Delete card
+              } else {
+                console.log("Update card");
+
+                try {
+                  const [result, fields] = await connection.execute(
+                    `
+                      update todo_fy.Cards
+                      set Cards.cardName = ?, Cards.description= ?, Cards.position = ?, Cards.LID = ?, Cards.PID= ?
+                      where Cards.CID = ?`,
+                    [
+                      currentCard.cardTitle,
+                      currentCard.cardDescription,
+                      cardPosition,
+                      listID,
+                      projectID,
+                      cardID,
+                    ]
+                  );
+                  updated++;
+                } catch (error) {
+                  console.log("Error:", error);
+                  res.json({ isError: true, errorMes: error.message });
+                }
+              }
+            }
+          }
+        }
       } catch (error) {
         console.log("Error:", error);
         res.json({ isError: true, errorMes: error.message });
       }
-
-      // connection.execute(
-      //   "insert into todo_fy.Lists(LID, listName, position, PID) values(?, ?, ?, ?)",
-      //   [Number(listID), currentList.listTitle, position, Number(projectID)],
-      //   function (error, result, fields) {
-      //     if (error) {
-      //       console.log("Error:", error);
-      //       res.json({ isError: true, errorMes: error.message });
-      //     } else {
-      //       created++;
-      //     }
-      //   }
-      // );
     } else {
       search = changeLog.lists.deleted.filter((list) => list == listID);
 
@@ -379,97 +308,82 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
           );
 
           updated++;
+
+          if (!currentList.isEmpty) {
+            for (let j = 0; j < currentList.cards.length; j++) {
+              const currentCard = currentList.cards[j];
+              console.log(currentCard);
+              const cardPosition = j + 1;
+              const cardID = currentCard.cardID.replace("C", "");
+              let cardSearch = changeLog.cards.created.filter(
+                (card) => card == cardID
+              );
+              console.log("card Search:", cardSearch);
+              if (cardSearch.length == 1) {
+                console.log("Create card");
+
+                try {
+                  const [result, fields] = await connection.execute(
+                    `
+                    insert into todo_fy.Cards(CID, cardName, description, position, LID, PID)
+                    values(?, ?, ?, ?, ?, ?)`,
+                    [
+                      Number(cardID),
+                      currentCard.cardTitle,
+                      currentCard.cardDescription,
+                      cardPosition,
+                      listID,
+                      projectID,
+                    ]
+                  );
+                  created++;
+                } catch (error) {
+                  console.log("Error:", error);
+                  res.json({ isError: true, errorMes: error.message });
+                }
+              } else {
+                let cardSearch = changeLog.cards.deleted.filter(
+                  (card) => card == cardID
+                );
+
+                if (cardSearch.length == 1) {
+                  // Delete card
+                } else {
+                  console.log("Update card");
+
+                  try {
+                    const [result, fields] = await connection.execute(
+                      `
+                        update todo_fy.Cards
+                        set Cards.cardName = ?, Cards.description= ?, Cards.position = ?, Cards.LID = ?, Cards.PID= ?
+                        where Cards.CID = ?`,
+                      [
+                        currentCard.cardTitle,
+                        currentCard.cardDescription,
+                        cardPosition,
+                        listID,
+                        projectID,
+                        cardID,
+                      ]
+                    );
+                    updated++;
+                  } catch (error) {
+                    console.log("Error:", error);
+                    res.json({ isError: true, errorMes: error.message });
+                  }
+                }
+              }
+            }
+          }
         } catch (error) {
           console.log("Error:", error);
           res.json({ isError: true, errorMes: error.message });
         }
-
-        // connection.execute(
-        //   `update todo_fy.Lists
-        //   set Lists.listName = ?, Lists.position = ?
-        //   where Lists.LID = ?`,
-        //   [currentList.listTitle, position, Number(projectID)],
-        //   function (error, result, fields) {
-        //     if (error) {
-        //       console.log("Error:", error);
-        //       res.json({ isError: true, errorMes: error.message });
-        //     } else {
-        //       updated++;
-        //     }
-        //   }
-        // );
       }
     }
   }
 
   res.json({ created: created, updated: updated, deleted: deleted });
-
-  // try {
-  //   const projectID = req.body.projectID;
-  //   const board = req.body.board;
-  //   const changeLog = req.body.changeLog;
-
-  //   console.log("Project ID", projectID);
-  //   console.log("board", board);
-  //   console.log("change Log", changeLog);
-
-  //   for (let i = 0; i < board.length; i++) {
-  //     const currentList = board[i];
-  //     console.log("Current List:", currentList);
-
-  //     const listID = currentList.listID.replace("L", "");
-  //     console.log("list ID", listID);
-  //     const position = i + 1;
-
-  //     let search = changeLog.lists.created.filter((list) => list == listID);
-  //     console.log("Search", search);
-
-  //     // return res.json({ search: search });
-  //     if (search.length == 1) {
-  //       console.log("Inserted");
-  //       connection.execute(
-  //         "insert into todo_fy.Lists(LID, listName, position, PID) values(?, ?, ?, ?)",
-  //         [Number(listID), currentList.listTitle, position, Number(projectID)],
-  //         function (error, result, fields) {
-  //           if (error) {
-  //             console.log("Error:", error);
-  //             res.json({ isError: true, errorMes: error.message });
-  //           } else {
-  //             created++;
-  //           }
-  //         }
-  //       );
-  //     } else {
-  //       search = changeLog.lists.deleted.filter((list) => list == listID);
-
-  //       if (search.length == 1) {
-  //         // Add Delete Statement
-  //         console.log("Deleted");
-  //       } else {
-  //         console.log("Updated");
-
-  //         connection.execute(
-  //           `update todo_fy.Lists
-  //           set Lists.listName = ?, Lists.position = ?
-  //           where Lists.LID = ?`,
-  //           [currentList.listTitle, position, Number(projectID)],
-  //           function (error, result, fields) {
-  //             if (error) {
-  //               console.log("Error:", error);
-  //               res.json({ isError: true, errorMes: error.message });
-  //             } else {
-  //               updated++;
-  //             }
-  //           }
-  //         );
-  //       }
-  //     }
-  //   }
-
-  //   res.json({ created: created, updated: updated, deleted: deleted });
-  // } catch (error) {
-  //   res.json({ isError: true, errorMes: error.message });
-  // }
 });
 
 //-------------------------------------------
