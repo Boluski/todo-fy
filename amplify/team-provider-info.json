@@ -23,7 +23,7 @@
       "function": {
         "todofyLambda": {
           "deploymentBucketName": "amplify-todofy-dev-6fffb-deployment",
-          "s3Key": "amplify-builds/todofyLambda-637170545771694c7942-build.zip"
+          "s3Key": "amplify-builds/todofyLambda-4a4e39724355542b6245-build.zip"
         }
       },
       "api": {

@@ -2,10 +2,12 @@
 
 import config from "../../../aws-exports";
 import { Amplify } from "aws-amplify";
-import { get, put } from "aws-amplify/api";
+import { get, post, put } from "aws-amplify/api";
 import { getCurrentUser } from "aws-amplify/auth";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+
+import generateID from "../../utils/generateID";
 
 import { Group, Stack, ScrollArea, LoadingOverlay } from "@mantine/core";
 
@@ -52,10 +54,12 @@ export default function Project({ params }: { params: { id: string } }) {
 
   const [lists, setLists] = useState<listType[]>([]);
   const [changeNumber, setChangeNumber] = useState(0);
-  const [changeLog, setChangeLog] = useState<changeLogType>({
+
+  const changeLogReset: changeLogType = {
     lists: { created: [], deleted: [] },
     cards: { created: [], deleted: [] },
-  });
+  };
+  const [changeLog, setChangeLog] = useState<changeLogType>(changeLogReset);
 
   let board: listType[];
 
@@ -140,14 +144,9 @@ export default function Project({ params }: { params: { id: string } }) {
             localStorage.getItem(`CHL-${projectID}`) as string
           );
 
-          console.log("From storage:", latestChangeLog);
-
           setChangeLog(latestChangeLog);
         }
 
-        // setChangeLog(
-        //   JSON.parse(localStorage.getItem(`CHL-${projectID}`) as string)
-        // );
         setLists(board);
         toggle();
 
@@ -156,7 +155,7 @@ export default function Project({ params }: { params: { id: string } }) {
         throw new TypeError("User is not authorized");
       }
     } catch (error) {
-      router.push("/dashboard");
+      // router.push("/dashboard");
       // console.log(error.message);
     }
   };
@@ -374,7 +373,7 @@ export default function Project({ params }: { params: { id: string } }) {
                 newLists[activeListIndex].cards.push({
                   cardTitle: "",
                   cardDescription: "",
-                  cardID: `C${Date.now()}`,
+                  cardID: `C${generateID()}`,
                   alpha: 0,
                 });
               }
@@ -400,7 +399,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   newLists[activeListIndex].cards.push({
                     cardTitle: "",
                     cardDescription: "",
-                    cardID: `C${Date.now()}`,
+                    cardID: `C${generateID()}`,
                     alpha: 0,
                   });
                 }
@@ -424,7 +423,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     newLists[activeListIndex].cards.push({
                       cardTitle: "",
                       cardDescription: "",
-                      cardID: `C${Date.now()}`,
+                      cardID: `C${generateID()}`,
                       alpha: 0,
                     });
                   }
@@ -447,20 +446,23 @@ export default function Project({ params }: { params: { id: string } }) {
     if (changeNumber == 10) {
       console.log("Save changes now:", changeNumber);
       console.log("Save:", lists);
+
+      const updateRequest = post({
+        apiName: "todofy",
+        path: "/TODO-fy/updateProject",
+        options: {
+          body: { projectID: projectID, board: lists, changeLog: changeLog },
+        },
+      });
+
+      const { body } = await updateRequest.response;
+
+      const test = await body.json();
+
+      console.log("UPDATE", test);
       setChangeNumber(0);
-      // const updateRequest = put({
-      //   apiName: "todofy",
-      //   path: "/TODO-fy/updateProject",
-      //   options: {
-      //     body: { projectID: projectID, board: lists },
-      //   },
-      // });
-
-      // const { body } = await updateRequest.response;
-
-      // const test = await body.json();
-
-      // console.log("UPDATE", test);
+      setChangeLog(changeLogReset);
+      localStorage.setItem(`CHL-${projectID}`, JSON.stringify(changeLogReset));
     } else {
       console.log("Don't save changes yet:", changeNumber);
     }

@@ -2,6 +2,8 @@ import { Paper, Center, TextInput, FocusTrap } from "@mantine/core";
 import { useState } from "react";
 import { listType, cardType, changeLogType } from "../utils/todofyTypes";
 
+import generateID from "../utils/generateID";
+
 export default function AddCardBtn(props: any) {
   // const lists: listType[] = [...props.lists]
   // console.log(props.listIndex);
@@ -36,7 +38,7 @@ export default function AddCardBtn(props: any) {
 
   function handleNewCard() {
     let newLists: listType[] = [...props.lists];
-    const uid = Date.now().toString();
+    const uid = generateID().toString();
     let newChangeLog: changeLogType = { ...props.changeLog };
     console.log("card:", newLists[props.listIndex].cards);
 

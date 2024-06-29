@@ -12,6 +12,8 @@ import { xray } from "../utils/xray";
 import { listType, changeLogType } from "../utils/todofyTypes";
 import { useState } from "react";
 
+import generateID from "../utils/generateID";
+
 export default function AddListBtn(props: any) {
   const [opened, { toggle }] = useDisclosure(false);
   const [listTitle, setListTitle] = useState("");
@@ -57,7 +59,7 @@ export default function AddListBtn(props: any) {
   );
 
   function handleNewList() {
-    const uid = Date.now().toString();
+    const uid = generateID().toString();
     let newChangeLog: changeLogType = { ...props.changeLog };
 
     let newLists: listType[] = [
@@ -69,7 +71,7 @@ export default function AddListBtn(props: any) {
           {
             cardTitle: "",
             cardDescription: "",
-            cardID: `C${Date.now()}`,
+            cardID: `C${uid}`,
             alpha: 0,
           },
         ],

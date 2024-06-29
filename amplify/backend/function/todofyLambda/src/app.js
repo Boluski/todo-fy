@@ -10,7 +10,7 @@ See the License for the specific language governing permissions and limitations 
 // Change Theme to Themes
 
 const express = require("express");
-const mysql = require("mysql2");
+const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 
@@ -41,159 +41,453 @@ app.use(function (req, res, next) {
   next();
 });
 
-const connection = mysql.createConnection(mysqlConfig);
+// const connection = await mysql.createConnection(mysqlConfig);
 /**********************
  * Example get method *
  **********************/
 
-app.get("/TODO-fy/users", function (req, res) {
-  connection.execute("SELECT * from Users", function (error, result, fields) {
-    if (error) {
-      res.json({ error: error });
-    } else {
-      res.json({ result: result, fields: fields });
-    }
-  });
+app.get("/TODO-fy/users", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  try {
+    const [result, fields] = await connection.execute("SELECT * from Users");
+    res.json({ result: result, fields: fields });
+  } catch (error) {
+    res.json({ error: error });
+  }
+
+  // connection.execute("SELECT * from Users", function (error, result, fields) {
+  //   if (error) {
+  //     res.json({ error: error });
+  //   } else {
+  //     res.json({ result: result, fields: fields });
+  //   }
+  // });
 });
 
-app.get("/TODO-fy/getProject", function (req, res) {
-  connection.execute(
-    `SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary, Projects.owner
-    FROM todo_fy.Projects
-    Inner join Theme on Projects.theme = Theme.TID
-    where PID =?`,
-    [Number(req.query.PID)],
-    function (error, result, fields) {
-      if (error) {
-        res.json({ isError: true, errorMes: error.message });
-      } else {
-        res.json({
-          isError: false,
-          errorMes: "",
-          result: result,
-          fields: fields,
-        });
-      }
-    }
-  );
+app.get("/TODO-fy/getProject", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  try {
+    const [result, fields] = await connection.execute(
+      `SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary, Projects.owner
+      FROM todo_fy.Projects
+      Inner join Theme on Projects.theme = Theme.TID
+      where PID =?`,
+      [Number(req.query.PID)]
+    );
+    res.json({
+      isError: false,
+      errorMes: "",
+      result: result,
+      fields: fields,
+    });
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+
+  // connection.execute(
+  //   `SELECT Projects.PID, Projects.title, Theme.main, Theme.secondary, Projects.owner
+  //   FROM todo_fy.Projects
+  //   Inner join Theme on Projects.theme = Theme.TID
+  //   where PID =?`,
+  //   [Number(req.query.PID)],
+  //   function (error, result, fields) {
+  //     if (error) {
+  //       res.json({ isError: true, errorMes: error.message });
+  //     } else {
+  //       res.json({
+  //         isError: false,
+  //         errorMes: "",
+  //         result: result,
+  //         fields: fields,
+  //       });
+  //     }
+  //   }
+  // );
 });
 
-app.get("/TODO-fy/getProjectResource", function (req, res) {
+app.get("/TODO-fy/getProjectResource", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
   let boardSchema = [];
   let boardCards = [];
 
-  connection.execute(
-    "select * from todo_fy.Cards where PID = ? order by position",
-    [Number(req.query.PID)],
-    function (error, result, fields) {
-      if (error) {
-        return res.json({ isError: true, errorMes: error.message });
+  try {
+    const [result, fields] = await connection.execute(
+      "select * from todo_fy.Cards where PID = ? order by position",
+      [Number(req.query.PID)]
+    );
+    boardCards = result;
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+
+  // connection.execute(
+  //   "select * from todo_fy.Cards where PID = ? order by position",
+  //   [Number(req.query.PID)],
+  //   function (error, result, fields) {
+  //     if (error) {
+  //       return res.json({ isError: true, errorMes: error.message });
+  //     } else {
+  //       boardCards = result;
+  //     }
+  //   }
+  // );
+
+  try {
+    const [result, fields] = await connection.execute(
+      "select * from todo_fy.Lists where PID = ? order by position",
+      [Number(req.query.PID)]
+    );
+
+    for (let i = 0; i < result.length; i++) {
+      let listCards = boardCards.filter((Card) => Card.LID == result[i].LID);
+
+      let currentList = {};
+
+      if (listCards.length == 0) {
+        currentList = {
+          // boardCards: boardCards,
+
+          listID: `L${result[i].LID}`,
+          listTitle: result[i].listName,
+          isEmpty: true,
+          cards: [
+            {
+              cardID: `C${Date.now()}`,
+              cardTitle: "",
+              cardDescription: "",
+              alpha: 0,
+            },
+          ],
+        };
       } else {
-        boardCards = result;
+        currentList = {
+          // boardCards: boardCards,
+          listID: `L${result[i].LID}`,
+          listTitle: result[i].listName,
+          isEmpty: false,
+
+          cards: listCards.map((card) => {
+            return {
+              listCards: listCards.length,
+              cardID: `C${card.CID}`,
+              cardTitle: card.cardName,
+              cardDescription: card.description,
+              alpha: 1,
+            };
+          }),
+        };
       }
+
+      boardSchema.push(currentList);
     }
-  );
 
-  connection.execute(
-    "select * from todo_fy.Lists where PID = ? order by position",
-    [Number(req.query.PID)],
-    function (error, result, fields) {
-      if (error) {
+    res.json({
+      isError: false,
+      errorMes: "",
+      result: boardSchema,
+      fields: fields,
+    });
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+
+  // connection.execute(
+  //   "select * from todo_fy.Lists where PID = ? order by position",
+  //   [Number(req.query.PID)],
+  //   function (error, result, fields) {
+  //     if (error) {
+  //       res.json({ isError: true, errorMes: error.message });
+  //     } else {
+  //       try {
+  //         for (let i = 0; i < result.length; i++) {
+  //           let listCards = boardCards.filter(
+  //             (Card) => Card.LID == result[i].LID
+  //           );
+
+  //           let currentList = {};
+
+  //           if (listCards.length == 0) {
+  //             currentList = {
+  //               // boardCards: boardCards,
+
+  //               listID: `L${result[i].LID}`,
+  //               listTitle: result[i].listName,
+  //               isEmpty: true,
+  //               cards: [
+  //                 {
+  //                   cardID: `C${Date.now()}`,
+  //                   cardTitle: "",
+  //                   cardDescription: "",
+  //                   alpha: 0,
+  //                 },
+  //               ],
+  //             };
+  //           } else {
+  //             currentList = {
+  //               // boardCards: boardCards,
+  //               listID: `L${result[i].LID}`,
+  //               listTitle: result[i].listName,
+  //               isEmpty: false,
+
+  //               cards: listCards.map((card) => {
+  //                 return {
+  //                   listCards: listCards.length,
+  //                   cardID: `C${card.CID}`,
+  //                   cardTitle: card.cardName,
+  //                   cardDescription: card.description,
+  //                   alpha: 1,
+  //                 };
+  //               }),
+  //             };
+  //           }
+
+  //           boardSchema.push(currentList);
+  //         }
+
+  //         res.json({
+  //           isError: false,
+  //           errorMes: "",
+  //           result: boardSchema,
+  //           fields: fields,
+  //         });
+  //       } catch (error) {
+  //         res.json({ isError: true, errorMes: error.message });
+  //       }
+  //     }
+  //   }
+  // );
+});
+
+app.post("/TODO-fy/addUser", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  try {
+    const [result, fields] = await connection.execute(
+      "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
+      [req.body.username, req.body.email, req.body.displayName]
+    );
+    res.json({ result: result, fields: fields });
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+
+  // connection.execute(
+  //   "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
+  //   [req.body.username, req.body.email, req.body.displayName],
+  //   function (error, result, fields) {
+  //     if (error) {
+  //       res.json({ error: error });
+  //     } else {
+  //       res.json({ result: result, fields: fields });
+  //     }
+  //   }
+  // );
+});
+
+app.post("/TODO-fy/addProject", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  try {
+    const [result, fields] = await connection.execute(
+      "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
+      [req.body.title, req.body.theme, req.body.owner]
+    );
+    res.json({ result: result, fields: fields });
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+
+  // connection.execute(
+  //   "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
+  //   [req.body.title, req.body.theme, req.body.owner],
+  //   function (error, result, fields) {
+  //     if (error) {
+  //       res.json({ error: error });
+  //     } else {
+  //       res.json({ result: result, fields: fields });
+  //     }
+  //   }
+  // );
+});
+
+app.post("/TODO-fy/updateProject", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  let created = 0;
+  let updated = 0;
+  let deleted = 0;
+
+  const projectID = req.body.projectID;
+  const board = req.body.board;
+  const changeLog = req.body.changeLog;
+
+  console.log("Project ID", projectID);
+  console.log("board", board);
+  console.log("change Log", changeLog);
+
+  for (let i = 0; i < board.length; i++) {
+    const currentList = board[i];
+    console.log("Current List:", currentList);
+
+    const listID = currentList.listID.replace("L", "");
+    console.log("list ID", listID);
+    const position = i + 1;
+
+    let search = changeLog.lists.created.filter((list) => list == listID);
+    console.log("Search", search);
+
+    // return res.json({ search: search });
+    if (search.length == 1) {
+      console.log("Inserted");
+
+      try {
+        const [result, fields] = await connection.execute(
+          "insert into todo_fy.Lists(LID, listName, position, PID) values(?, ?, ?, ?)",
+          [Number(listID), currentList.listTitle, position, Number(projectID)]
+        );
+
+        created++;
+      } catch (error) {
+        console.log("Error:", error);
         res.json({ isError: true, errorMes: error.message });
+      }
+
+      // connection.execute(
+      //   "insert into todo_fy.Lists(LID, listName, position, PID) values(?, ?, ?, ?)",
+      //   [Number(listID), currentList.listTitle, position, Number(projectID)],
+      //   function (error, result, fields) {
+      //     if (error) {
+      //       console.log("Error:", error);
+      //       res.json({ isError: true, errorMes: error.message });
+      //     } else {
+      //       created++;
+      //     }
+      //   }
+      // );
+    } else {
+      search = changeLog.lists.deleted.filter((list) => list == listID);
+
+      if (search.length == 1) {
+        // Add Delete Statement
+        console.log("Deleted");
       } else {
+        console.log("Updated");
+
         try {
-          for (let i = 0; i < result.length; i++) {
-            let listCards = boardCards.filter(
-              (Card) => Card.LID == result[i].LID
-            );
+          const [result, fields] = await connection.execute(
+            `update todo_fy.Lists 
+          set Lists.listName = ?, Lists.position = ?
+          where Lists.LID = ?`,
+            [currentList.listTitle, position, Number(listID)]
+          );
 
-            let currentList = {};
-
-            if (listCards.length == 0) {
-              currentList = {
-                // boardCards: boardCards,
-
-                listID: `L${result[i].LID}`,
-                listTitle: result[i].listName,
-                isEmpty: true,
-                cards: [
-                  {
-                    cardID: `C${Date.now()}`,
-                    cardTitle: "",
-                    cardDescription: "",
-                    alpha: 0,
-                  },
-                ],
-              };
-            } else {
-              currentList = {
-                // boardCards: boardCards,
-                listID: `L${result[i].LID}`,
-                listTitle: result[i].listName,
-                isEmpty: false,
-
-                cards: listCards.map((card) => {
-                  return {
-                    listCards: listCards.length,
-                    cardID: `C${card.CID}`,
-                    cardTitle: card.cardName,
-                    cardDescription: card.description,
-                    alpha: 1,
-                  };
-                }),
-              };
-            }
-
-            boardSchema.push(currentList);
-          }
-
-          res.json({
-            isError: false,
-            errorMes: "",
-            result: boardSchema,
-            fields: fields,
-          });
+          updated++;
         } catch (error) {
+          console.log("Error:", error);
           res.json({ isError: true, errorMes: error.message });
         }
+
+        // connection.execute(
+        //   `update todo_fy.Lists
+        //   set Lists.listName = ?, Lists.position = ?
+        //   where Lists.LID = ?`,
+        //   [currentList.listTitle, position, Number(projectID)],
+        //   function (error, result, fields) {
+        //     if (error) {
+        //       console.log("Error:", error);
+        //       res.json({ isError: true, errorMes: error.message });
+        //     } else {
+        //       updated++;
+        //     }
+        //   }
+        // );
       }
     }
-  );
-});
+  }
 
-app.post("/TODO-fy/addUser", function (req, res) {
-  connection.execute(
-    "INSERT INTO Users (username, email, displayName) VALUES(?, ?, ?)",
-    [req.body.username, req.body.email, req.body.displayName],
-    function (error, result, fields) {
-      if (error) {
-        res.json({ error: error });
-      } else {
-        res.json({ result: result, fields: fields });
-      }
-    }
-  );
-});
+  res.json({ created: created, updated: updated, deleted: deleted });
 
-app.post("/TODO-fy/addProject", function (req, res) {
-  connection.execute(
-    "INSERT INTO Projects (title, theme, owner) VALUES(?, ?, ?)",
-    [req.body.title, req.body.theme, req.body.owner],
-    function (error, result, fields) {
-      if (error) {
-        res.json({ error: error });
-      } else {
-        res.json({ result: result, fields: fields });
-      }
-    }
-  );
-});
+  // try {
+  //   const projectID = req.body.projectID;
+  //   const board = req.body.board;
+  //   const changeLog = req.body.changeLog;
 
-app.put("/TODO-fy/updateProject", function (req, res) {
-  res.json({ sent: req.body });
+  //   console.log("Project ID", projectID);
+  //   console.log("board", board);
+  //   console.log("change Log", changeLog);
+
+  //   for (let i = 0; i < board.length; i++) {
+  //     const currentList = board[i];
+  //     console.log("Current List:", currentList);
+
+  //     const listID = currentList.listID.replace("L", "");
+  //     console.log("list ID", listID);
+  //     const position = i + 1;
+
+  //     let search = changeLog.lists.created.filter((list) => list == listID);
+  //     console.log("Search", search);
+
+  //     // return res.json({ search: search });
+  //     if (search.length == 1) {
+  //       console.log("Inserted");
+  //       connection.execute(
+  //         "insert into todo_fy.Lists(LID, listName, position, PID) values(?, ?, ?, ?)",
+  //         [Number(listID), currentList.listTitle, position, Number(projectID)],
+  //         function (error, result, fields) {
+  //           if (error) {
+  //             console.log("Error:", error);
+  //             res.json({ isError: true, errorMes: error.message });
+  //           } else {
+  //             created++;
+  //           }
+  //         }
+  //       );
+  //     } else {
+  //       search = changeLog.lists.deleted.filter((list) => list == listID);
+
+  //       if (search.length == 1) {
+  //         // Add Delete Statement
+  //         console.log("Deleted");
+  //       } else {
+  //         console.log("Updated");
+
+  //         connection.execute(
+  //           `update todo_fy.Lists
+  //           set Lists.listName = ?, Lists.position = ?
+  //           where Lists.LID = ?`,
+  //           [currentList.listTitle, position, Number(projectID)],
+  //           function (error, result, fields) {
+  //             if (error) {
+  //               console.log("Error:", error);
+  //               res.json({ isError: true, errorMes: error.message });
+  //             } else {
+  //               updated++;
+  //             }
+  //           }
+  //         );
+  //       }
+  //     }
+  //   }
+
+  //   res.json({ created: created, updated: updated, deleted: deleted });
+  // } catch (error) {
+  //   res.json({ isError: true, errorMes: error.message });
+  // }
 });
 
 //-------------------------------------------
+
+// /aws/lambda/todofyLambda-dev
+
+// aws lambda invoke --function-name my-lambda-function --cli-binary-format raw-in-base64-out --payload '{"foo":"bar"}' output.json --log-type Tail --query 'LogResult' --output text | base64 -d
+
+// aws logs get-log-events --log-group-name /aws/lambda/todofyLambda-dev --log-stream-name 2024/06/29/[\$LATEST]2cc22da771a1436dbfcf452a03b301e9
+
+// aws logs get-log-events --log-group-name '/aws/lambda/todofyLambda-dev' --log-stream-name '2024/06/29/[$LATEST]2cc22da771a1436dbfcf452a03b301e9'
+
+// awslogs get /aws/lambda/todofyLambda-dev
+
+// aws logs describe-log-groups --query logGroups[*].logGroupName
+// [
+//     "/aws/lambda/MyFunction"
+// ]
 
 // app.get("/users/*", function (req, res) {
 //   // Add your code here
