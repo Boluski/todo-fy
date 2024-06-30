@@ -48,6 +48,7 @@ export default function List(props: any) {
                   <SortableCard
                     key={card.cardID}
                     id={card.cardID}
+                    setDisableListDrag={props.setDisableListDrag}
                     title={card.cardTitle}
                     description={card.cardDescription}
                     alpha={card.alpha}
