@@ -30,12 +30,6 @@ import {
 Amplify.configure(config);
 
 export default function GetStarted() {
-  const xray = {
-    root: {
-      outline: "2px solid blue",
-    },
-  };
-
   const router = useRouter();
   const [active, setActive] = useState(0);
   const [theme, setTheme] = useState(DEFAULT_THEME.colors.green[8]);
