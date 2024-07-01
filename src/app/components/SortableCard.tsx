@@ -38,6 +38,7 @@ export default function SortableCard(props: any) {
         title={props.title}
         description={props.description}
         label={props.label}
+        subtasks={props.subtasks}
         alpha={props.alpha}
       />
     </div>

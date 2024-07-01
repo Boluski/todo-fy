@@ -122,6 +122,7 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
               cardTitle: "",
               cardDescription: "",
               cardLabel: "#ffffff",
+              cardSubtasks: [],
               alpha: 0,
             },
           ],
@@ -140,6 +141,7 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
               cardTitle: card.cardName,
               cardDescription: card.description,
               cardLabel: "#ffffff",
+              cardSubtasks: [],
               alpha: 1,
             };
           }),

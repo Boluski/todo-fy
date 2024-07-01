@@ -12,8 +12,6 @@ import {
   ColorSwatch,
   DEFAULT_THEME,
   Button,
-  Checkbox,
-  CloseButton,
   Progress,
 } from "@mantine/core";
 
@@ -24,7 +22,8 @@ import Subtask from "./Subtask";
 
 import { Interweave } from "interweave";
 
-import { listType } from "../utils/todofyTypes";
+import { listType, subtaskType, changeLogType } from "../utils/todofyTypes";
+import generateID from "../utils/generateID";
 
 import { RichTextEditor, Link } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
@@ -43,17 +42,28 @@ import { xray } from "../utils/xray";
 
 export default function Card(props: any) {
   const [opened, { open, close }] = useDisclosure(false);
-
   const [editableOpen, { toggle }] = useDisclosure(true);
 
   const [title, setTitle] = useState(props.title);
   const [label, setLabel] = useState(props.label);
 
   const content: string = props.description;
-  const [plainDescription, setPlainDescription] = useState("");
-  // const shortDescription = useEditor({ extensions: [StarterKit], content });
-
   const newLists: listType[] = [...props.lists];
+
+  const [newSubtask, setNewSubtask] = useState("");
+
+  const [cardSubtasks, setCardSubtasks] = useState<subtaskType[]>(
+    props.subtasks
+  );
+  const completedTasks = cardSubtasks.filter(
+    (task) => task.checked == true
+  ).length;
+
+  const allTasks = cardSubtasks.length;
+
+  const [percent, setPercent] = useState<number>(
+    (completedTasks / allTasks) * 100
+  );
 
   const themeArray = [
     "#ffffff",
@@ -110,7 +120,7 @@ export default function Card(props: any) {
               {editor?.getText()}
             </Text>
             <Group pt={10} justify="end">
-              <TbSubtask size={"1.2rem"} />
+              {cardSubtasks.length != 0 ? <TbSubtask size={"1.2rem"} /> : null}
             </Group>
           </Stack>
         </Stack>
@@ -236,38 +246,59 @@ export default function Card(props: any) {
               w={"100%"}
             >
               <Button color="green.8" onClick={toggle}>
-                Save
+                Save Description
               </Button>
             </Group>
           </Group>
           <Group>
             <Text size="1.5rem">Subtasks:</Text>
           </Group>
-          <Group>
-            <Progress
-              w="100%"
-              size={"md"}
-              color="green.4"
-              radius={"md"}
-              value={45}
-            />
-          </Group>
+
+          {cardSubtasks.length != 0 ? (
+            <Group>
+              <Progress
+                w="100%"
+                size={"md"}
+                color={"green.8"}
+                radius={"md"}
+                value={percent}
+              />
+            </Group>
+          ) : null}
 
           <Stack
             gap={0}
             style={{
-              borderBottom: "2px solid black",
+              borderBottom: cardSubtasks.length != 0 ? "2px solid gray" : "0px",
             }}
           >
-            <Subtask isChecked={false} subTitle={"Nice this guy is cool"} />
-            <Subtask isChecked={true} subTitle={"Nice this guy is cool"} />
-            <Subtask isChecked={true} subTitle={"Nice this guy is cool"} />
-            <Subtask isChecked={false} subTitle={"Nice this guy is cool"} />
+            {cardSubtasks.map((subtask: subtaskType, index) => (
+              <Subtask
+                key={subtask.subtaskID}
+                subtaskID={subtask.subtaskID}
+                subTitle={subtask.title}
+                isChecked={subtask.checked}
+                // util
+                cardSubtasks={cardSubtasks}
+                setCardSubtasks={setCardSubtasks}
+                setPercent={setPercent}
+                subtaskIndex={index}
+              />
+            ))}
+            {/* <Subtask isChecked={false} subTitle={"Nice this guy is cool"} /> */}
           </Stack>
 
           <Group pb={20} justify="space-between">
-            <TextInput size="md" w={"36rem"} variant="filled" />
-            <Button size="md" color="green.8">
+            <TextInput
+              onChange={(e) => {
+                setNewSubtask(e.currentTarget.value);
+              }}
+              placeholder="Subtask Name"
+              size="md"
+              w={"36rem"}
+              variant="filled"
+            />
+            <Button onClick={handleNewSubtask} size="md" color="green.8">
               Add Subtask
             </Button>
           </Group>
@@ -276,21 +307,49 @@ export default function Card(props: any) {
     </>
   );
 
+  function handleNewSubtask() {
+    const newCardSubtasks = [...cardSubtasks];
+    const newChangeLog: changeLogType = { ...props.changeLog };
+    const uid = generateID().toString();
+    newCardSubtasks.push({
+      subtaskID: `S${uid}`,
+      title: newSubtask,
+      checked: false,
+    });
+
+    newChangeLog.subtasks.created.push(uid);
+
+    const completedTasks = newCardSubtasks.filter(
+      (task) => task.checked == true
+    ).length;
+
+    const allTasks = newCardSubtasks.length;
+
+    setPercent((completedTasks / allTasks) * 100);
+
+    setCardSubtasks(newCardSubtasks);
+
+    props.setChangeLog(newChangeLog);
+    setNewSubtask("");
+  }
+
   function handleClose() {
     props.setDisableCardDrag(false);
     props.setDisableListDrag(false);
-    // console.log("Title:", title);
-    // console.log("Description:", editor?.getHTML());
-    // console.log("CardIndex:", props.cardIndex);
+
+    console.log("Subtasks:", cardSubtasks);
 
     newLists[props.listIndex].cards[props.cardIndex].cardTitle = title;
     newLists[props.listIndex].cards[props.cardIndex].cardLabel = label;
     newLists[props.listIndex].cards[props.cardIndex].cardDescription =
       editor?.getHTML() as string;
+    newLists[props.listIndex].cards[props.cardIndex].cardSubtasks =
+      cardSubtasks;
 
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
     props.setLists(newLists);
 
+    props.setChangeNumber((changeNumber: number) => changeNumber + 1);
     close();
   }
 }

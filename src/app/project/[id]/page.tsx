@@ -58,6 +58,7 @@ export default function Project({ params }: { params: { id: string } }) {
   const changeLogReset: changeLogType = {
     lists: { created: [], deleted: [] },
     cards: { created: [], deleted: [] },
+    subtasks: { created: [], deleted: [] },
   };
   const [changeLog, setChangeLog] = useState<changeLogType>(changeLogReset);
 
@@ -217,6 +218,7 @@ export default function Project({ params }: { params: { id: string } }) {
                         cardDescription: card.cardDescription,
                         cardID: card.cardID,
                         cardLabel: card.cardLabel,
+                        cardSubtasks: card.cardSubtasks,
                         alpha: card.alpha,
                       }))}
                     />
@@ -236,6 +238,9 @@ export default function Project({ params }: { params: { id: string } }) {
                         label={
                           lists[activeListID].cards[activeCardID].cardLabel
                         }
+                        subtasks={
+                          lists[activeListID].cards[activeCardID].cardSubtasks
+                        }
                         setChangeNumber={setChangeNumber}
                         changeLog={changeLog}
                         setChangeLog={setChangeLog}
@@ -248,11 +253,19 @@ export default function Project({ params }: { params: { id: string } }) {
                     {activeId ? (
                       <List
                         listTitle={lists[activeListID].listTitle}
+                        projectID={projectID}
+                        setChangeNumber={setChangeNumber}
+                        changeLog={changeLog}
+                        setChangeLog={setChangeLog}
+                        lists={lists}
+                        setLists={setLists}
                         card={lists[activeListID].cards.map((card) => ({
                           cardTitle: card.cardTitle,
                           cardDescription: card.cardDescription,
                           cardID: card.cardID,
                           alpha: card.alpha,
+                          cardLabel: card.cardLabel,
+                          cardSubtasks: [],
                         }))}
                       />
                     ) : null}
@@ -386,6 +399,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   cardDescription: "",
                   cardID: `C${generateID()}`,
                   cardLabel: "#ffffff",
+                  cardSubtasks: [],
                   alpha: 0,
                 });
               }
@@ -413,6 +427,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     cardDescription: "",
                     cardID: `C${generateID()}`,
                     cardLabel: "#ffffff",
+                    cardSubtasks: [],
                     alpha: 0,
                   });
                 }
@@ -438,6 +453,7 @@ export default function Project({ params }: { params: { id: string } }) {
                       cardDescription: "",
                       cardID: `C${generateID()}`,
                       cardLabel: "#ffffff",
+                      cardSubtasks: [],
                       alpha: 0,
                     });
                   }

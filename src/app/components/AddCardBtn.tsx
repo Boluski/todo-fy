@@ -53,6 +53,8 @@ export default function AddCardBtn(props: any) {
         cardID: `C${uid}`,
         cardTitle: cardTitle,
         cardDescription: ``,
+        cardLabel: "#ffffff",
+        cardSubtasks: [],
         alpha: 1,
       },
     ];

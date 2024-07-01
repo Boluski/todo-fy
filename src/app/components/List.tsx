@@ -53,6 +53,7 @@ export default function List(props: any) {
                     description={card.cardDescription}
                     alpha={card.alpha}
                     label={card.cardLabel}
+                    subtasks={card.cardSubtasks}
                     // Utilities
                     cardIndex={card.cardIndex}
                     setChangeNumber={props.setChangeNumber}
