@@ -12,10 +12,15 @@ import {
   ColorSwatch,
   DEFAULT_THEME,
   Button,
+  Checkbox,
+  CloseButton,
+  Progress,
 } from "@mantine/core";
+
 import { useDisclosure } from "@mantine/hooks";
 import { TbSubtask } from "react-icons/tb";
 import { useState } from "react";
+import Subtask from "./Subtask";
 
 import { Interweave } from "interweave";
 
@@ -127,9 +132,9 @@ export default function Card(props: any) {
           mah={"40rem"}
         >
           <Group
-          // justify={"end"}
-
-          //  styles={xray}
+            // justify={"end"}
+            justify="space-between"
+            //  styles={xray}
           >
             <Text size="1.5rem">Title:</Text>
             <TextInput
@@ -169,7 +174,7 @@ export default function Card(props: any) {
               w={"100%"}
               gap={0}
               display={!editableOpen ? "none" : "flex"}
-              bg={"gray.2"}
+              bg={"gray.1"}
               style={{ borderRadius: "5px" }}
               p={30}
             >
@@ -235,6 +240,37 @@ export default function Card(props: any) {
                 Save
               </Button>
             </Group>
+          </Group>
+          <Group>
+            <Text size="1.5rem">Subtasks:</Text>
+          </Group>
+          <Group>
+            <Progress
+              w="100%"
+              size={"md"}
+              color="green.4"
+              radius={"md"}
+              value={45}
+            />
+          </Group>
+
+          <Stack
+            gap={0}
+            style={{
+              borderBottom: "2px solid black",
+            }}
+          >
+            <Subtask isChecked={false} subTitle={"Nice this guy is cool"} />
+            <Subtask isChecked={true} subTitle={"Nice this guy is cool"} />
+            <Subtask isChecked={true} subTitle={"Nice this guy is cool"} />
+            <Subtask isChecked={false} subTitle={"Nice this guy is cool"} />
+          </Stack>
+
+          <Group pb={20} justify="space-between">
+            <TextInput size="md" w={"36rem"} variant="filled" />
+            <Button size="md" color="green.8">
+              Add Subtask
+            </Button>
           </Group>
         </Stack>
       </Modal>
