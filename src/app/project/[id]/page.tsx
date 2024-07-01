@@ -265,7 +265,7 @@ export default function Project({ params }: { params: { id: string } }) {
                           cardID: card.cardID,
                           alpha: card.alpha,
                           cardLabel: card.cardLabel,
-                          cardSubtasks: [],
+                          cardSubtasks: card.cardSubtasks,
                         }))}
                       />
                     ) : null}

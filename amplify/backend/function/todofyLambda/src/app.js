@@ -133,7 +133,7 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
         cardLabel: cardLabel[Number(result[i].label) - 1],
         cardSubtasks: cardSubtasks.map((subtask) => {
           return {
-            subtaskID: subtask.STID,
+            subtaskID: `S${subtask.STID}`,
             title: subtask.subtaskName,
             checked: subtask.completed,
           };
@@ -289,6 +289,65 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                   ]
                 );
                 created++;
+                if (currentCard.cardSubtasks.length != 0) {
+                  for (let f = 0; f < currentCard.cardSubtasks.length; f++) {
+                    const currentSubtask = currentCard.cardSubtasks[f];
+                    console.log(currentSubtask);
+
+                    const subtaskID = currentSubtask.subtaskID.replace("S", "");
+                    let subtaskSearch = changeLog.subtasks.created.filter(
+                      (subtask) => subtask == subtaskID
+                    );
+                    console.log("subtask Search:", cardSearch);
+
+                    if (subtaskSearch.length == 1) {
+                      console.log("Create Subtasks");
+                      try {
+                        const [result, fields] = await connection.execute(
+                          `
+                          insert into todo_fy.Subtasks_2(STID, subtaskName, completed, CID, PID)
+                          values (?, ?, ?, ?, ?)`,
+                          [
+                            Number(subtaskID),
+                            currentSubtask.title,
+                            currentSubtask.checked,
+                            cardID,
+                            projectID,
+                          ]
+                        );
+                        created++;
+                      } catch (error) {
+                        res.json({ isError: true, errorMes: error.message });
+                      }
+                    } else {
+                      let subtaskSearch = changeLog.subtasks.deleted.filter(
+                        (subtask) => subtask == subtaskID
+                      );
+
+                      if (subtaskSearch.length == 1) {
+                        // handle delete
+                      } else {
+                        try {
+                          const [result, fields] = await connection.execute(
+                            `
+                            update todo_fy.Subtasks_2
+                            set Subtasks_2.subtaskName = ?, Subtasks_2.completed = ?
+                            where Subtasks_2.STID = ?
+                           `,
+                            [
+                              currentSubtask.title,
+                              currentSubtask.checked,
+                              Number(subtaskID),
+                            ]
+                          );
+                          updated++;
+                        } catch (error) {
+                          res.json({ isError: true, errorMes: error.message });
+                        }
+                      }
+                    }
+                  }
+                }
               } catch (error) {
                 console.log("Error:", error);
                 res.json({ isError: true, errorMes: error.message });
@@ -320,6 +379,71 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                     ]
                   );
                   updated++;
+                  if (currentCard.cardSubtasks.length != 0) {
+                    for (let f = 0; f < currentCard.cardSubtasks.length; f++) {
+                      const currentSubtask = currentCard.cardSubtasks[f];
+                      console.log(currentSubtask);
+
+                      const subtaskID = currentSubtask.subtaskID.replace(
+                        "S",
+                        ""
+                      );
+                      let subtaskSearch = changeLog.subtasks.created.filter(
+                        (subtask) => subtask == subtaskID
+                      );
+                      console.log("subtask Search:", cardSearch);
+
+                      if (subtaskSearch.length == 1) {
+                        console.log("Create Subtasks");
+                        try {
+                          const [result, fields] = await connection.execute(
+                            `
+                            insert into todo_fy.Subtasks_2(STID, subtaskName, completed, CID, PID)
+                            values (?, ?, ?, ?, ?)`,
+                            [
+                              Number(subtaskID),
+                              currentSubtask.title,
+                              currentSubtask.checked,
+                              cardID,
+                              projectID,
+                            ]
+                          );
+                          created++;
+                        } catch (error) {
+                          res.json({ isError: true, errorMes: error.message });
+                        }
+                      } else {
+                        let subtaskSearch = changeLog.subtasks.deleted.filter(
+                          (subtask) => subtask == subtaskID
+                        );
+
+                        if (subtaskSearch.length == 1) {
+                          // handle delete
+                        } else {
+                          try {
+                            const [result, fields] = await connection.execute(
+                              `
+                              update todo_fy.Subtasks_2
+                              set Subtasks_2.subtaskName = ?, Subtasks_2.completed = ?
+                              where Subtasks_2.STID = ?
+                             `,
+                              [
+                                currentSubtask.title,
+                                currentSubtask.checked,
+                                Number(subtaskID),
+                              ]
+                            );
+                            updated++;
+                          } catch (error) {
+                            res.json({
+                              isError: true,
+                              errorMes: error.message,
+                            });
+                          }
+                        }
+                      }
+                    }
+                  }
                 } catch (error) {
                   console.log("Error:", error);
                   res.json({ isError: true, errorMes: error.message });
@@ -380,6 +504,71 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                     ]
                   );
                   created++;
+                  if (currentCard.cardSubtasks.length != 0) {
+                    for (let f = 0; f < currentCard.cardSubtasks.length; f++) {
+                      const currentSubtask = currentCard.cardSubtasks[f];
+                      console.log(currentSubtask);
+
+                      const subtaskID = currentSubtask.subtaskID.replace(
+                        "S",
+                        ""
+                      );
+                      let subtaskSearch = changeLog.subtasks.created.filter(
+                        (subtask) => subtask == subtaskID
+                      );
+                      console.log("subtask Search:", cardSearch);
+
+                      if (subtaskSearch.length == 1) {
+                        console.log("Create Subtasks");
+                        try {
+                          const [result, fields] = await connection.execute(
+                            `
+                            insert into todo_fy.Subtasks_2(STID, subtaskName, completed, CID, PID)
+                            values (?, ?, ?, ?, ?)`,
+                            [
+                              Number(subtaskID),
+                              currentSubtask.title,
+                              currentSubtask.checked,
+                              cardID,
+                              projectID,
+                            ]
+                          );
+                          created++;
+                        } catch (error) {
+                          res.json({ isError: true, errorMes: error.message });
+                        }
+                      } else {
+                        let subtaskSearch = changeLog.subtasks.deleted.filter(
+                          (subtask) => subtask == subtaskID
+                        );
+
+                        if (subtaskSearch.length == 1) {
+                          // handle delete
+                        } else {
+                          try {
+                            const [result, fields] = await connection.execute(
+                              `
+                              update todo_fy.Subtasks_2
+                              set Subtasks_2.subtaskName = ?, Subtasks_2.completed = ?
+                              where Subtasks_2.STID = ?
+                             `,
+                              [
+                                currentSubtask.title,
+                                currentSubtask.checked,
+                                Number(subtaskID),
+                              ]
+                            );
+                            updated++;
+                          } catch (error) {
+                            res.json({
+                              isError: true,
+                              errorMes: error.message,
+                            });
+                          }
+                        }
+                      }
+                    }
+                  }
                 } catch (error) {
                   console.log("Error:", error);
                   res.json({ isError: true, errorMes: error.message });
@@ -411,6 +600,78 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                       ]
                     );
                     updated++;
+                    if (currentCard.cardSubtasks.length != 0) {
+                      for (
+                        let f = 0;
+                        f < currentCard.cardSubtasks.length;
+                        f++
+                      ) {
+                        const currentSubtask = currentCard.cardSubtasks[f];
+                        console.log(currentSubtask);
+
+                        const subtaskID = currentSubtask.subtaskID.replace(
+                          "S",
+                          ""
+                        );
+                        let subtaskSearch = changeLog.subtasks.created.filter(
+                          (subtask) => subtask == subtaskID
+                        );
+                        console.log("subtask Search:", cardSearch);
+
+                        if (subtaskSearch.length == 1) {
+                          console.log("Create Subtasks");
+                          try {
+                            const [result, fields] = await connection.execute(
+                              `
+                              insert into todo_fy.Subtasks_2(STID, subtaskName, completed, CID, PID)
+                              values (?, ?, ?, ?, ?)`,
+                              [
+                                Number(subtaskID),
+                                currentSubtask.title,
+                                currentSubtask.checked,
+                                cardID,
+                                projectID,
+                              ]
+                            );
+                            created++;
+                          } catch (error) {
+                            res.json({
+                              isError: true,
+                              errorMes: error.message,
+                            });
+                          }
+                        } else {
+                          let subtaskSearch = changeLog.subtasks.deleted.filter(
+                            (subtask) => subtask == subtaskID
+                          );
+
+                          if (subtaskSearch.length == 1) {
+                            // handle delete
+                          } else {
+                            try {
+                              const [result, fields] = await connection.execute(
+                                `
+                                update todo_fy.Subtasks_2
+                                set Subtasks_2.subtaskName = ?, Subtasks_2.completed = ?
+                                where Subtasks_2.STID = ?
+                               `,
+                                [
+                                  currentSubtask.title,
+                                  currentSubtask.checked,
+                                  Number(subtaskID),
+                                ]
+                              );
+                              updated++;
+                            } catch (error) {
+                              res.json({
+                                isError: true,
+                                errorMes: error.message,
+                              });
+                            }
+                          }
+                        }
+                      }
+                    }
                   } catch (error) {
                     console.log("Error:", error);
                     res.json({ isError: true, errorMes: error.message });
