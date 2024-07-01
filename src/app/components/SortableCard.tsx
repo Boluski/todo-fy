@@ -22,10 +22,22 @@ export default function SortableCard(props: any) {
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <Card
+        cardID={props.id}
+        setChangeNumber={props.setChangeNumber}
+        changeLog={props.changeLog}
+        setChangeLog={props.setChangeLog}
+        projectID={props.projectID}
+        lists={props.lists}
+        setLists={props.setLists}
+        listIndex={props.listIndex}
+        cardIndex={props.cardIndex}
+        //
         setDisableCardDrag={setDisableCardDrag}
         setDisableListDrag={props.setDisableListDrag}
+        //
         title={props.title}
         description={props.description}
+        label={props.label}
         alpha={props.alpha}
       />
     </div>

@@ -211,10 +211,12 @@ export default function Project({ params }: { params: { id: string } }) {
                       setLists={setLists}
                       listIndex={index}
                       items={list.cards?.map((card) => card.cardID)}
-                      card={list.cards?.map((card) => ({
+                      card={list.cards?.map((card, index) => ({
+                        cardIndex: index,
                         cardTitle: card.cardTitle,
                         cardDescription: card.cardDescription,
                         cardID: card.cardID,
+                        cardLabel: card.cardLabel,
                         alpha: card.alpha,
                       }))}
                     />
@@ -231,6 +233,15 @@ export default function Project({ params }: { params: { id: string } }) {
                             .cardDescription
                         }
                         alpha={"1"}
+                        label={
+                          lists[activeListID].cards[activeCardID].cardLabel
+                        }
+                        setChangeNumber={setChangeNumber}
+                        changeLog={changeLog}
+                        setChangeLog={setChangeLog}
+                        projectID={projectID}
+                        lists={lists}
+                        setLists={setLists}
                       />
                     ) : null}
 
@@ -374,6 +385,7 @@ export default function Project({ params }: { params: { id: string } }) {
                   cardTitle: "",
                   cardDescription: "",
                   cardID: `C${generateID()}`,
+                  cardLabel: "#ffffff",
                   alpha: 0,
                 });
               }
@@ -400,6 +412,7 @@ export default function Project({ params }: { params: { id: string } }) {
                     cardTitle: "",
                     cardDescription: "",
                     cardID: `C${generateID()}`,
+                    cardLabel: "#ffffff",
                     alpha: 0,
                   });
                 }
@@ -424,6 +437,7 @@ export default function Project({ params }: { params: { id: string } }) {
                       cardTitle: "",
                       cardDescription: "",
                       cardID: `C${generateID()}`,
+                      cardLabel: "#ffffff",
                       alpha: 0,
                     });
                   }

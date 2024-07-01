@@ -1,7 +1,9 @@
 export type cardType = {
+  cardIndex?: number;
   cardID: string;
   cardTitle: string;
   cardDescription: string;
+  cardLabel: string;
   alpha: number;
 };
 

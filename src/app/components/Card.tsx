@@ -24,6 +24,8 @@ import Subtask from "./Subtask";
 
 import { Interweave } from "interweave";
 
+import { listType } from "../utils/todofyTypes";
+
 import { RichTextEditor, Link } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import Highlight from "@tiptap/extension-highlight";
@@ -45,11 +47,13 @@ export default function Card(props: any) {
   const [editableOpen, { toggle }] = useDisclosure(true);
 
   const [title, setTitle] = useState(props.title);
-  const [label, setLabel] = useState("#ffffff");
+  const [label, setLabel] = useState(props.label);
 
   const content: string = props.description;
   const [plainDescription, setPlainDescription] = useState("");
   // const shortDescription = useEditor({ extensions: [StarterKit], content });
+
+  const newLists: listType[] = [...props.lists];
 
   const themeArray = [
     "#ffffff",
@@ -114,12 +118,7 @@ export default function Card(props: any) {
       <Modal
         opened={opened}
         // scrollAreaComponent={ScrollArea.Autosize}
-        onClose={() => {
-          close();
-          props.setDisableCardDrag(false);
-          props.setDisableListDrag(false);
-          console.log(editor?.getText());
-        }}
+        onClose={handleClose}
         title={"Card Details"}
         centered
         size={"xl"}
@@ -276,4 +275,22 @@ export default function Card(props: any) {
       </Modal>
     </>
   );
+
+  function handleClose() {
+    props.setDisableCardDrag(false);
+    props.setDisableListDrag(false);
+    // console.log("Title:", title);
+    // console.log("Description:", editor?.getHTML());
+    // console.log("CardIndex:", props.cardIndex);
+
+    newLists[props.listIndex].cards[props.cardIndex].cardTitle = title;
+    newLists[props.listIndex].cards[props.cardIndex].cardLabel = label;
+    newLists[props.listIndex].cards[props.cardIndex].cardDescription =
+      editor?.getHTML() as string;
+
+    localStorage.setItem(props.projectID, JSON.stringify(newLists));
+    props.setLists(newLists);
+
+    close();
+  }
 }

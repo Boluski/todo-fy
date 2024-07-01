@@ -121,6 +121,7 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
               cardID: `C${generateID()}`,
               cardTitle: "",
               cardDescription: "",
+              cardLabel: "#ffffff",
               alpha: 0,
             },
           ],
@@ -138,6 +139,7 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
               cardID: `C${card.CID}`,
               cardTitle: card.cardName,
               cardDescription: card.description,
+              cardLabel: "#ffffff",
               alpha: 1,
             };
           }),
