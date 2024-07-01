@@ -72,6 +72,8 @@ export default function AddListBtn(props: any) {
             cardTitle: "",
             cardDescription: "",
             cardID: `C${uid}`,
+            cardLabel: "#ffffff",
+            cardSubtasks: [],
             alpha: 0,
           },
         ],

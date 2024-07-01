@@ -40,6 +40,18 @@ function generateID() {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
+const cardLabel = [
+  "#2f9e44",
+  "#1971c2",
+  "#e03131",
+  "#6741d9",
+  "#e8590c",
+  "#0C85A3",
+  "#09926E",
+  "#66a80f",
+  "#ffffff",
+];
+
 // Enable CORS for all methods
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -87,13 +99,50 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
   const connection = await mysql.createConnection(mysqlConfig);
   let boardSchema = [];
   let boardCards = [];
+  let boardSubtasks = [];
 
   try {
     const [result, fields] = await connection.execute(
-      "select * from todo_fy.Cards where PID = ? order by position",
+      "select * from todo_fy.Subtasks_2 where PID = ?",
       [Number(req.query.PID)]
     );
-    boardCards = result;
+    boardSubtasks = result;
+    console.log("board Subtask:", boardSubtasks);
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+
+  try {
+    const [result, fields] = await connection.execute(
+      "select * from todo_fy.Cards_2 where PID = ? order by position",
+      [Number(req.query.PID)]
+    );
+
+    let currentCard = {};
+
+    for (let i = 0; i < result.length; i++) {
+      const cardSubtasks = boardSubtasks.filter(
+        (Subtask) => Subtask.CID == result[i].CID
+      );
+
+      currentCard = {
+        LID: result[i].LID,
+        cardID: `C${result[i].CID}`,
+        cardTitle: result[i].cardName,
+        cardDescription: result[i].description,
+        cardLabel: cardLabel[Number(result[i].label) - 1],
+        cardSubtasks: cardSubtasks.map((subtask) => {
+          return {
+            subtaskID: subtask.STID,
+            title: subtask.subtaskName,
+            checked: subtask.completed,
+          };
+        }),
+        alpha: 1,
+      };
+      boardCards.push(currentCard);
+    }
+    console.log("board Cards:", boardCards);
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });
   }
@@ -106,13 +155,11 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
 
     for (let i = 0; i < result.length; i++) {
       let listCards = boardCards.filter((Card) => Card.LID == result[i].LID);
-
+      console.log("list cards:", listCards);
       let currentList = {};
 
       if (listCards.length == 0) {
         currentList = {
-          // boardCards: boardCards,
-
           listID: `L${result[i].LID}`,
           listTitle: result[i].listName,
           isEmpty: true,
@@ -129,28 +176,17 @@ app.get("/TODO-fy/getProjectResource", async function (req, res) {
         };
       } else {
         currentList = {
-          // boardCards: boardCards,
           listID: `L${result[i].LID}`,
           listTitle: result[i].listName,
           isEmpty: false,
-
-          cards: listCards.map((card) => {
-            return {
-              listCards: listCards.length,
-              cardID: `C${card.CID}`,
-              cardTitle: card.cardName,
-              cardDescription: card.description,
-              cardLabel: "#ffffff",
-              cardSubtasks: [],
-              alpha: 1,
-            };
-          }),
+          cards: listCards,
         };
       }
 
       boardSchema.push(currentList);
     }
 
+    console.log("Board:", boardSchema);
     res.json({
       isError: false,
       errorMes: "",
@@ -240,13 +276,14 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
               try {
                 const [result, fields] = await connection.execute(
                   `
-                  insert into todo_fy.Cards(CID, cardName, description, position, LID, PID)
-                  values(?, ?, ?, ?, ?, ?)`,
+                  insert into todo_fy.Cards_2(CID, cardName, description, position, label, LID, PID)
+                  values(?, ?, ?, ?, ?, ?, ?)`,
                   [
                     Number(cardID),
                     currentCard.cardTitle,
                     currentCard.cardDescription,
                     cardPosition,
+                    Number(cardLabel.indexOf(currentCard.cardLabel) + 1),
                     listID,
                     projectID,
                   ]
@@ -269,13 +306,14 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                 try {
                   const [result, fields] = await connection.execute(
                     `
-                      update todo_fy.Cards
-                      set Cards.cardName = ?, Cards.description= ?, Cards.position = ?, Cards.LID = ?, Cards.PID= ?
-                      where Cards.CID = ?`,
+                      update todo_fy.Cards_2
+                      set Cards_2.cardName = ?, Cards_2.description= ?, Cards_2.position = ?,  Cards_2.label = ?, Cards_2.LID = ?, Cards_2.PID= ?
+                      where Cards_2.CID = ?`,
                     [
                       currentCard.cardTitle,
                       currentCard.cardDescription,
                       cardPosition,
+                      Number(cardLabel.indexOf(currentCard.cardLabel) + 1),
                       listID,
                       projectID,
                       cardID,
@@ -329,13 +367,14 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                 try {
                   const [result, fields] = await connection.execute(
                     `
-                    insert into todo_fy.Cards(CID, cardName, description, position, LID, PID)
-                    values(?, ?, ?, ?, ?, ?)`,
+                    insert into todo_fy.Cards_2(CID, cardName, description, position, label, LID, PID)
+                    values(?, ?, ?, ?, ?, ?, ?)`,
                     [
                       Number(cardID),
                       currentCard.cardTitle,
                       currentCard.cardDescription,
                       cardPosition,
+                      Number(cardLabel.indexOf(currentCard.cardLabel) + 1),
                       listID,
                       projectID,
                     ]
@@ -358,13 +397,14 @@ app.post("/TODO-fy/updateProject", async function (req, res) {
                   try {
                     const [result, fields] = await connection.execute(
                       `
-                        update todo_fy.Cards
-                        set Cards.cardName = ?, Cards.description= ?, Cards.position = ?, Cards.LID = ?, Cards.PID= ?
-                        where Cards.CID = ?`,
+                        update todo_fy.Cards_2
+                        set Cards_2.cardName = ?, Cards_2.description= ?, Cards_2.position = ?,  Cards_2.label = ?, Cards_2.LID = ?, Cards_2.PID= ?
+                        where Cards_2.CID = ?`,
                       [
                         currentCard.cardTitle,
                         currentCard.cardDescription,
                         cardPosition,
+                        Number(cardLabel.indexOf(currentCard.cardLabel) + 1),
                         listID,
                         projectID,
                         cardID,

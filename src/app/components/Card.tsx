@@ -293,12 +293,19 @@ export default function Card(props: any) {
               onChange={(e) => {
                 setNewSubtask(e.currentTarget.value);
               }}
+              value={newSubtask}
               placeholder="Subtask Name"
               size="md"
               w={"36rem"}
               variant="filled"
             />
-            <Button onClick={handleNewSubtask} size="md" color="green.8">
+            <Button
+              onClick={() => {
+                handleNewSubtask();
+              }}
+              size="md"
+              color="green.8"
+            >
               Add Subtask
             </Button>
           </Group>
