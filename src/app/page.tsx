@@ -1,5 +1,13 @@
 "use client";
-import { Input, Stack, Center, Title, Button, Group } from "@mantine/core";
+import {
+  Input,
+  Stack,
+  Center,
+  Title,
+  Button,
+  Group,
+  Paper,
+} from "@mantine/core";
 import { useRouter } from "next/navigation";
 import config from "../aws-exports";
 import { Amplify } from "aws-amplify";
@@ -31,7 +39,7 @@ export default function Home() {
   }, []);
 
   return (
-    <Stack h={"100vh"} styles={xray} bg={"green.8"}>
+    <Stack mih={"100vh"} styles={xray} bg={"green.8"}>
       <Title ml={"xl"} c={"white"} size={"2.7rem"} order={1}>
         TODO-fy
       </Title>
@@ -63,6 +71,14 @@ export default function Home() {
             Login
           </Button>
         </Group>
+
+        <Paper w={"60%"} mb={100} shadow="xl">
+          <Stack style={{ border: "2px solid gray" }}>
+            <video autoPlay muted loop width={"100%"}>
+              <source src="./Demo.mp4" type="video/mp4" />
+            </video>
+          </Stack>
+        </Paper>
       </Stack>
     </Stack>
   );
