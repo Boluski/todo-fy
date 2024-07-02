@@ -17,6 +17,7 @@ import {
 
 import { useDisclosure } from "@mantine/hooks";
 import { TbSubtask } from "react-icons/tb";
+import { GrTextAlignFull } from "react-icons/gr";
 import { useState } from "react";
 import Subtask from "./Subtask";
 
@@ -119,8 +120,9 @@ export default function Card(props: any) {
             <Text pt={5} lineClamp={3}>
               {editor?.getText()}
             </Text>
-            <Group pt={10} justify="end">
+            <Group pt={10} justify="end" pr={10}>
               {cardSubtasks.length != 0 ? <TbSubtask size={"1.2rem"} /> : null}
+              {editor?.getText() != "" ? <GrTextAlignFull /> : null}
             </Group>
           </Stack>
         </Stack>
