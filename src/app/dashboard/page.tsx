@@ -3,6 +3,7 @@
 import config from "../../aws-exports";
 import { Amplify } from "aws-amplify";
 import { getCurrentUser, fetchUserAttributes, signOut } from "aws-amplify/auth";
+import { IoMdAdd } from "react-icons/io";
 import {
   Button,
   Title,
@@ -177,7 +178,13 @@ export default function Dashboard() {
           <Title order={2} size={"3rem"}>
             Projects
           </Title>
-          <Button color="green.8" size="lg" onClick={() => setOpenModal(true)}>
+          <Button
+            radius={"md"}
+            color="green.8"
+            size="lg"
+            rightSection={<IoMdAdd size={"2rem"} />}
+            onClick={() => setOpenModal(true)}
+          >
             Create New Project
           </Button>
         </Group>

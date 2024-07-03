@@ -12,13 +12,13 @@ export default function ProjectCard(props: any) {
     <Paper
       //   w={"30rem"}
       h={"12rem"}
-      styles={{ root: { borderRadius: "1rem" } }}
+      styles={{ root: { borderRadius: "0.5rem" } }}
       shadow="lg"
     >
       <Stack
         // styles={xray}
         bg={props.color}
-        style={{ borderRadius: "1rem" }}
+        style={{ borderRadius: "0.5rem" }}
         p={20}
         h={"100%"}
         justify={"space-between"}
@@ -26,6 +26,7 @@ export default function ProjectCard(props: any) {
         <Title c={"white"}>{props.title}</Title>
         <Group justify="end">
           <Button
+            radius={"md"}
             variant="light"
             color="white"
             size="lg"

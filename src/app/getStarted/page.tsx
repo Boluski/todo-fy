@@ -137,6 +137,7 @@ export default function GetStarted() {
   const handleFirstProject = async () => {
     try {
       await signIn({ username: userName, password: password });
+
       const themeID = themeArray.indexOf(theme) + 1;
       const payload = {
         title: projectTitle,
