@@ -74,6 +74,19 @@ app.get("/TODO-fy/users", async function (req, res) {
   }
 });
 
+app.get("/TODO-fy/getUser", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  try {
+    const [result, fields] = await connection.execute(
+      "SELECT * from todo_fy.Users where username = ?",
+      [req.query.username]
+    );
+    res.json({ result: result });
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+});
+
 app.get("/TODO-fy/getProject", async function (req, res) {
   const connection = await mysql.createConnection(mysqlConfig);
   try {
@@ -89,6 +102,26 @@ app.get("/TODO-fy/getProject", async function (req, res) {
       errorMes: "",
       result: result,
       fields: fields,
+    });
+  } catch (error) {
+    res.json({ isError: true, errorMes: error.message });
+  }
+});
+
+app.get("/TODO-fy/getUserProjects", async function (req, res) {
+  const connection = await mysql.createConnection(mysqlConfig);
+  try {
+    const [result, fields] = await connection.execute(
+      `SELECT Projects.PID, Projects.title, Theme.main
+      FROM todo_fy.Projects 
+      Inner join Theme on Projects.theme = Theme.TID 
+      where owner =?`,
+      [req.query.username]
+    );
+    res.json({
+      isError: false,
+      errorMes: "",
+      result: result,
     });
   } catch (error) {
     res.json({ isError: true, errorMes: error.message });

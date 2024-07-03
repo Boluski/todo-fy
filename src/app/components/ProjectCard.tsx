@@ -1,7 +1,13 @@
 import { Stack, Title, Button, Group, Paper } from "@mantine/core";
 import { xray } from "../utils/xray";
+import { useRouter } from "next/navigation";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function ProjectCard(props: any) {
+  const projectURL = `/project/${props.id}`;
+  const [loading, { toggle }] = useDisclosure(false);
+  const router = useRouter();
+
   return (
     <Paper
       //   w={"30rem"}
@@ -11,15 +17,24 @@ export default function ProjectCard(props: any) {
     >
       <Stack
         // styles={xray}
-        bg={"green.8"}
+        bg={props.color}
         style={{ borderRadius: "1rem" }}
         p={20}
         h={"100%"}
         justify={"space-between"}
       >
-        <Title c={"white"}>Project Management</Title>
+        <Title c={"white"}>{props.title}</Title>
         <Group justify="end">
-          <Button variant="light" color="white" size="lg">
+          <Button
+            variant="light"
+            color="white"
+            size="lg"
+            loading={loading}
+            onClick={() => {
+              toggle();
+              router.push(projectURL);
+            }}
+          >
             Open Project
           </Button>
         </Group>
