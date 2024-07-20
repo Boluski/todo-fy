@@ -5,14 +5,11 @@ import {
   Title,
   Text,
   Stack,
-  Center,
   Grid,
   GridCol,
-  Fieldset,
   TextInput,
   PasswordInput,
   Button,
-  Anchor,
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,21 +17,29 @@ import { Amplify } from "aws-amplify";
 import config from "../../aws-exports";
 import { signIn, getCurrentUser } from "aws-amplify/auth";
 
+Amplify.configure(config);
 export default function Login() {
-  Amplify.configure(config);
-
-  const xray = {
-    root: {
-      outline: "2px solid blue",
-    },
-  };
-
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
+  const [userNameError, setUserNameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const [loginDisabled, setLoginDisabled] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
+
   const router = useRouter();
 
+  const handleEmpty = (userName: string, password: string) => {
+    if (userName == "" || password == "") {
+      setLoginDisabled(true);
+    } else {
+      setLoginDisabled(false);
+    }
+  };
+
   const handleClick = async () => {
+    setLoginLoading(true);
     console.log(userName);
     console.log(password);
     try {
@@ -44,6 +49,10 @@ export default function Login() {
       });
       router.push("/dashboard");
     } catch (error) {
+      setUserNameError("Username may not exist.");
+      setPasswordError("Password may be incorrect.");
+      setLoginDisabled(true);
+      setLoginLoading(false);
       console.log(error);
     }
   };
@@ -91,8 +100,16 @@ export default function Login() {
                   size="md"
                   mt={"xs"}
                   value={userName}
+                  error={userNameError}
                   onChange={(e) => {
+                    handleEmpty(e.currentTarget.value, password);
                     setUserName(e.currentTarget.value);
+
+                    if (e.currentTarget.value == "") {
+                      setUserNameError("Username can not be empty");
+                    } else {
+                      setUserNameError("");
+                    }
                   }}
                 />
               </Stack>
@@ -104,8 +121,16 @@ export default function Login() {
                   size="md"
                   mt={"xs"}
                   value={password}
+                  error={passwordError}
                   onChange={(e) => {
+                    handleEmpty(userName, e.currentTarget.value);
                     setPassword(e.currentTarget.value);
+
+                    if (e.currentTarget.value == "") {
+                      setPasswordError("Password can not be empty");
+                    } else {
+                      setPasswordError("");
+                    }
                   }}
                 />
               </Stack>
@@ -119,7 +144,13 @@ export default function Login() {
                 >
                   Sign Up
                 </Button>
-                <Button color="green.8" size="lg" onClick={handleClick}>
+                <Button
+                  disabled={loginDisabled}
+                  loading={loginLoading}
+                  color="green.8"
+                  size="lg"
+                  onClick={handleClick}
+                >
                   Login
                 </Button>
               </Group>

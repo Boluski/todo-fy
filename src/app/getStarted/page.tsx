@@ -10,7 +10,7 @@ import {
 } from "aws-amplify/auth";
 import config from "../../aws-exports";
 import { Amplify } from "aws-amplify";
-import { post, get } from "aws-amplify/api";
+import { post } from "aws-amplify/api";
 import {
   Stack,
   Stepper,
@@ -25,7 +25,6 @@ import {
   ColorSwatch,
   DEFAULT_THEME,
   PinInput,
-  Input,
 } from "@mantine/core";
 import * as EmailValidator from "email-validator";
 import PasswordValidator from "password-validator";
