@@ -1,13 +1,5 @@
 "use client";
-import {
-  Input,
-  Stack,
-  Center,
-  Title,
-  Button,
-  Group,
-  Paper,
-} from "@mantine/core";
+import { Stack, Title, Button, Group, Paper } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import config from "../aws-exports";
 import { Amplify } from "aws-amplify";
@@ -45,11 +37,21 @@ export default function Home() {
       </Title>
 
       <Stack align="center" justify="center" h={"80%"}>
-        <Title c={"white"} size={"6rem"}>
+        <Title
+          c={"white"}
+          size={"6rem"}
+          style={{ textAlign: "center" }}
+          px={10}
+        >
           Your all in one productivity tool
         </Title>
 
-        <Title size={"2rem"} c={"white"}>
+        <Title
+          size={"2rem"}
+          c={"white"}
+          style={{ textAlign: "center" }}
+          px={10}
+        >
           Speed up your productivity with TODO-fy! Productivity as never been
           easier
         </Title>
