@@ -25,9 +25,30 @@ import {
   ColorSwatch,
   DEFAULT_THEME,
   PinInput,
+  Input,
 } from "@mantine/core";
+import * as EmailValidator from "email-validator";
+import PasswordValidator from "password-validator";
 
 Amplify.configure(config);
+
+const passwordSchema = new PasswordValidator();
+passwordSchema
+  .is()
+  .min(8)
+  .is()
+  .max(100)
+  .has()
+  .uppercase()
+  .has()
+  .lowercase()
+  .has()
+  .digits(1)
+  .has()
+  .symbols(1)
+  .has()
+  .not()
+  .spaces();
 
 export default function GetStarted() {
   const router = useRouter();
@@ -41,7 +62,24 @@ export default function GetStarted() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [projectTitle, setProjectTitle] = useState("");
 
+  const [userNameError, setUserNameError] = useState("");
+  const [displayNameError, setDisplayNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
   const [verificationCode, setVerificationCode] = useState("");
+
+  const [getStartedDisabled, setGetStartedDisabled] = useState(true);
+  const [getStartedLoading, setGetStartedLoading] = useState(false);
+
+  const [verifyDisabled, setVerifyDisabled] = useState(true);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const [pinError, setPinError] = useState(false);
+
+  const [projectTitleError, setProjectTitleError] = useState("");
+  const [projectDisabled, setProjectDisabled] = useState(true);
+  const [projectLoading, setProjectLoading] = useState(false);
 
   const themeArray = [
     DEFAULT_THEME.colors.green[8],
@@ -56,6 +94,10 @@ export default function GetStarted() {
 
   const nextSlide = () => {
     setActive((current) => (current < 3 ? current + 1 : current));
+  };
+
+  const prevSlide = () => {
+    setActive((current) => (current > 0 ? current - 1 : current));
   };
 
   const addUser = async () => {
@@ -80,7 +122,13 @@ export default function GetStarted() {
     }
   };
 
-  const handleSignUp = async () => {
+  const handleGetStartedButton = (
+    userName: string,
+    displayName: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+  ) => {
     console.log(userName);
     console.log(displayName);
     console.log(email);
@@ -93,30 +141,41 @@ export default function GetStarted() {
       password == "" ||
       confirmPassword == ""
     ) {
-      console.log("Empty fields");
+      setGetStartedDisabled(true);
     } else {
-      try {
-        if (password == confirmPassword) {
-          await signUp({
-            username: userName,
-            password: password,
-            options: {
-              userAttributes: {
-                email: email,
-              },
-            },
-          });
-          nextSlide();
-        } else {
-          console.log("Password don't match");
-        }
-      } catch (e) {
-        console.log(e);
-      }
+      setGetStartedDisabled(false);
+    }
+  };
+
+  const handleSignUp = async () => {
+    console.log(userName);
+    console.log(displayName);
+    console.log(email);
+    console.log(password);
+    console.log(confirmPassword);
+
+    try {
+      await signUp({
+        username: userName,
+        password: password,
+        options: {
+          userAttributes: {
+            email: email,
+          },
+        },
+      });
+      nextSlide();
+    } catch (e) {
+      console.log("Login Error:", e);
+
+      setGetStartedLoading(false);
+      setGetStartedDisabled(true);
+      setUserNameError("This username as been taken.");
     }
   };
 
   const handleVerification = async () => {
+    setVerifyLoading(true);
     console.log(verificationCode);
     try {
       await confirmSignUp({
@@ -125,8 +184,20 @@ export default function GetStarted() {
       });
       await addUser();
       nextSlide();
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log((error as Error).name);
+      if ((error as Error).name == "AliasExistsException") {
+        setEmailError("This email as already been taken.");
+        setGetStartedLoading(false);
+        setGetStartedDisabled(true);
+        prevSlide();
+        setPinError(false);
+      } else {
+        setPinError(true);
+      }
+      setVerificationCode("");
+      setVerifyDisabled(true);
+      setVerifyLoading(false);
     }
   };
 
@@ -135,6 +206,7 @@ export default function GetStarted() {
   };
 
   const handleFirstProject = async () => {
+    setProjectLoading(true);
     try {
       await signIn({ username: userName, password: password });
 
@@ -197,10 +269,25 @@ export default function GetStarted() {
               <Stack>
                 <Stack gap={0}>
                   <Text size="1.25rem">Username:</Text>
+
                   <TextInput
                     value={userName}
+                    error={userNameError}
                     onChange={(e) => {
                       setUserName(e.currentTarget.value);
+                      if (e.currentTarget.value == "") {
+                        setUserNameError("Username can not be empty.");
+                      } else {
+                        setUserNameError("");
+                      }
+
+                      handleGetStartedButton(
+                        e.currentTarget.value,
+                        displayName,
+                        email,
+                        password,
+                        confirmPassword
+                      );
                     }}
                     color="green.8"
                     variant="filled"
@@ -212,8 +299,21 @@ export default function GetStarted() {
                   <Text size="1.25rem">Display Name:</Text>
                   <TextInput
                     value={displayName}
+                    error={displayNameError}
                     onChange={(e) => {
                       setDisplayName(e.currentTarget.value);
+                      if (e.currentTarget.value == "") {
+                        setDisplayNameError("Displayname can not be empty.");
+                      } else {
+                        setDisplayNameError("");
+                      }
+                      handleGetStartedButton(
+                        userName,
+                        e.currentTarget.value,
+                        email,
+                        password,
+                        confirmPassword
+                      );
                     }}
                     color="green.8"
                     variant="filled"
@@ -226,8 +326,29 @@ export default function GetStarted() {
                   <TextInput
                     inputMode="email"
                     value={email}
+                    error={emailError}
                     onChange={(e) => {
+                      let enable = false;
+                      handleGetStartedButton(
+                        userName,
+                        displayName,
+                        e.currentTarget.value,
+                        password,
+                        confirmPassword
+                      );
+
                       setEmail(e.currentTarget.value);
+                      if (e.currentTarget.value == "") {
+                        setEmailError("Email can not be empty.");
+                      } else {
+                        if (EmailValidator.validate(e.currentTarget.value)) {
+                          setEmailError("");
+                          setGetStartedDisabled(false);
+                        } else {
+                          setEmailError("This is not an email.");
+                          setGetStartedDisabled(true);
+                        }
+                      }
                     }}
                     color="green.8"
                     variant="filled"
@@ -240,8 +361,39 @@ export default function GetStarted() {
                   <Text size="1.25rem">Password:</Text>
                   <PasswordInput
                     value={password}
+                    error={passwordError}
                     onChange={(e) => {
+                      handleGetStartedButton(
+                        userName,
+                        displayName,
+                        email,
+                        e.currentTarget.value,
+                        confirmPassword
+                      );
                       setPassword(e.currentTarget.value);
+
+                      if (e.currentTarget.value == "") {
+                        setPasswordError("Password can not be empty.");
+                      } else {
+                        if (passwordSchema.validate(e.currentTarget.value)) {
+                          setPasswordError("");
+
+                          if (e.currentTarget.value == confirmPassword) {
+                            setConfirmPasswordError("");
+                            setGetStartedDisabled(false);
+                          } else {
+                            setConfirmPasswordError(
+                              "Passwords does not match."
+                            );
+                            setGetStartedDisabled(true);
+                          }
+                        } else {
+                          setPasswordError(
+                            "Password must have at least 8 characters and must have at least lowercase, uppercase, number and special character."
+                          );
+                          setGetStartedDisabled(true);
+                        }
+                      }
                     }}
                     variant="filled"
                     size="md"
@@ -253,8 +405,42 @@ export default function GetStarted() {
                   <Text size="1.25rem">Confirm Password:</Text>
                   <PasswordInput
                     value={confirmPassword}
+                    error={confirmPasswordError}
                     onChange={(e) => {
+                      handleGetStartedButton(
+                        userName,
+                        displayName,
+                        email,
+                        password,
+                        e.currentTarget.value
+                      );
+
                       setConfirmPassword(e.currentTarget.value);
+                      if (e.currentTarget.value == "") {
+                        setConfirmPasswordError(
+                          "Confirm password can not be empty."
+                        );
+                      } else {
+                        if (passwordSchema.validate(e.currentTarget.value)) {
+                          // setConfirmPasswordError("");
+                          // setGetStartedDisabled(false);
+
+                          if (e.currentTarget.value == password) {
+                            setConfirmPasswordError("");
+                            setGetStartedDisabled(false);
+                          } else {
+                            setConfirmPasswordError(
+                              "Passwords does not match."
+                            );
+                            setGetStartedDisabled(true);
+                          }
+                        } else {
+                          setConfirmPasswordError(
+                            "Password must have at least 8 characters and must have at least lowercase, uppercase, number and special character."
+                          );
+                          setGetStartedDisabled(true);
+                        }
+                      }
                     }}
                     variant="filled"
                     size="md"
@@ -271,7 +457,16 @@ export default function GetStarted() {
                     Login
                   </Button>
 
-                  <Button color="green.8" size="md" onClick={handleSignUp}>
+                  <Button
+                    disabled={getStartedDisabled}
+                    loading={getStartedLoading}
+                    color="green.8"
+                    size="md"
+                    onClick={() => {
+                      setGetStartedLoading(true);
+                      handleSignUp();
+                    }}
+                  >
                     Get Started
                   </Button>
                 </Group>
@@ -293,6 +488,7 @@ export default function GetStarted() {
                 <Title c={"green.8"} order={1} size={"5rem"}>
                   Verify Your Email
                 </Title>
+
                 <Title
                   order={2}
                   size={"1.2rem"}
@@ -309,17 +505,28 @@ export default function GetStarted() {
                   inputMode="numeric"
                   placeholder=""
                   value={verificationCode}
+                  error={pinError}
                   onComplete={(e) => {
                     setVerificationCode(e);
+                    setVerifyDisabled(false);
                   }}
                 />
+                <Text
+                  style={{ fontWeight: "bold" }}
+                  c={"red"}
+                  hidden={!pinError}
+                >
+                  You entered a wrong verification code.
+                </Text>
                 <Button
                   mt={24}
                   color="green.8"
                   size="lg"
                   onClick={handleVerification}
+                  disabled={verifyDisabled}
+                  loading={verifyLoading}
                 >
-                  Email Verified
+                  Verify
                 </Button>
               </Stack>
             </StepperStep>
@@ -338,8 +545,19 @@ export default function GetStarted() {
                     size="md"
                     mt={"xs"}
                     value={projectTitle}
+                    error={projectTitleError}
                     onChange={(e) => {
                       setProjectTitle(e.currentTarget.value);
+
+                      if (e.currentTarget.value == "") {
+                        setProjectTitleError(
+                          "You must give this project a name."
+                        );
+                        setProjectDisabled(true);
+                      } else {
+                        setProjectTitleError("");
+                        setProjectDisabled(false);
+                      }
                     }}
                   />
                 </Stack>
@@ -362,7 +580,13 @@ export default function GetStarted() {
                   />
                 </Stack>
 
-                <Button color="green.8" size="lg" onClick={handleFirstProject}>
+                <Button
+                  disabled={projectDisabled}
+                  loading={projectLoading}
+                  color="green.8"
+                  size="lg"
+                  onClick={handleFirstProject}
+                >
                   Create Project
                 </Button>
               </Stack>
