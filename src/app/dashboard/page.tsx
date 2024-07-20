@@ -21,10 +21,8 @@ import {
   DEFAULT_THEME,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { FiUser } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { xray } from "../utils/xray";
 import ProjectCard from "../components/ProjectCard";
 import { get, post } from "aws-amplify/api";
 
@@ -74,6 +72,10 @@ export default function Dashboard() {
   const [userEmail, setUserEmail] = useState("");
   const [userDisplayName, setUserDisplayName] = useState("");
   const [userProjects, setUserProjects] = useState<project[]>([]);
+
+  const [projectTitleError, setProjectTitleError] = useState("");
+  const [projectDisabled, setProjectDisabled] = useState(true);
+  const [projectLoading, setProjectLoading] = useState(false);
 
   useEffect(() => {
     handleClick();
@@ -220,8 +222,17 @@ export default function Dashboard() {
               size="md"
               mt={"xs"}
               value={projectTitle}
+              error={projectTitleError}
               onChange={(e) => {
                 setProjectTitle(e.currentTarget.value);
+
+                if (e.currentTarget.value == "") {
+                  setProjectTitleError("You must give this project a name.");
+                  setProjectDisabled(true);
+                } else {
+                  setProjectTitleError("");
+                  setProjectDisabled(false);
+                }
               }}
             />
           </Stack>
@@ -244,7 +255,13 @@ export default function Dashboard() {
             />
           </Stack>
 
-          <Button color="green.8" size="lg" onClick={handleFirstProject}>
+          <Button
+            disabled={projectDisabled}
+            loading={projectLoading}
+            color="green.8"
+            size="lg"
+            onClick={handleFirstProject}
+          >
             Create Project
           </Button>
         </Stack>
