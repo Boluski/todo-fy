@@ -1,13 +1,10 @@
 import { Paper, Center, TextInput, FocusTrap } from "@mantine/core";
 import { useState } from "react";
-import { listType, cardType, changeLogType } from "../utils/todofyTypes";
+import { listType, changeLogType } from "../utils/todofyTypes";
 
 import generateID from "../utils/generateID";
 
 export default function AddCardBtn(props: any) {
-  // const lists: listType[] = [...props.lists]
-  // console.log(props.listIndex);
-
   const [cardTitle, setCardTitle] = useState("");
   return (
     <>
@@ -37,16 +34,20 @@ export default function AddCardBtn(props: any) {
   );
 
   function handleNewCard() {
+    // Duplicates the List and the ChangeLog and creates a new uid for the list.
     let newLists: listType[] = [...props.lists];
     const uid = generateID().toString();
     let newChangeLog: changeLogType = { ...props.changeLog };
     console.log("card:", newLists[props.listIndex].cards);
 
+    // If List is empty, removes the placeholder card from the list.
     if (newLists[props.listIndex].isEmpty) {
       newLists[props.listIndex].cards.pop();
       newLists[props.listIndex].isEmpty = false;
     }
 
+    // Creates the new card and appends it to the remaining cards in the list.
+    // Then adds the id to the ChangeLog.
     newLists[props.listIndex].cards = [
       ...newLists[props.listIndex].cards,
       {
@@ -60,12 +61,14 @@ export default function AddCardBtn(props: any) {
     ];
     newChangeLog.cards.created.push(uid);
 
+    // Save the board schema and the ChangeLog to localStorage.
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
     localStorage.setItem(
       `CHL-${props.projectID}`,
       JSON.stringify(newChangeLog)
     );
 
+    // Update all the necessary states.
     props.setChangeLog(newChangeLog);
     props.setChangeNumber((count: number) => count + 1);
     props.setLists(newLists);

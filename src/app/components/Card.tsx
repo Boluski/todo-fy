@@ -1,6 +1,5 @@
 "use client";
 import {
-  Box,
   Stack,
   Title,
   Text,
@@ -34,12 +33,6 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
-
-import { xray } from "../utils/xray";
-
-// const content = "";
-
-// '<h2 style="text-align: center;">Welcome to Mantine rich text editor</h2><p><code>RichTextEditor</code> component focuses on usability and is designed to be as simple as possible to bring a familiar editing experience to regular users. <code>RichTextEditor</code> is based on <a href="https://tiptap.dev/" rel="noopener noreferrer" target="_blank">Tiptap.dev</a> and supports all of its features:</p><ul><li>General text formatting: <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <s>strike-through</s> </li><li>Headings (h1-h6)</li><li>Sub and super scripts (<sup>&lt;sup /&gt;</sup> and <sub>&lt;sub /&gt;</sub> tags)</li><li>Ordered and bullet lists</li><li>Text align&nbsp;</li><li>And all <a href="https://tiptap.dev/extensions" target="_blank" rel="noopener noreferrer">other extensions</a></li></ul>';
 
 export default function Card(props: any) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -98,6 +91,7 @@ export default function Card(props: any) {
           bg={label}
           style={{ borderRadius: "0.2rem" }}
           onClick={() => {
+            // Open the card details and disable all drag and drop features.
             open();
             props.setDisableCardDrag(true);
             props.setDisableListDrag(true);
@@ -112,7 +106,6 @@ export default function Card(props: any) {
             bg={"white"}
             ml={8}
             p={10}
-            //    styles={xray}
           >
             <Title lineClamp={2} order={3}>
               {title}
@@ -127,26 +120,17 @@ export default function Card(props: any) {
           </Stack>
         </Stack>
       </Paper>
+      {/*----------Card Details Modal----------*/}
       <Modal
         opened={opened}
-        // scrollAreaComponent={ScrollArea.Autosize}
         onClose={handleClose}
         title={"Card Details"}
         centered
         size={"xl"}
         styles={{ title: { fontSize: "2rem", fontWeight: "bolder" } }}
       >
-        <Stack
-          // styles={xray}
-          gap={20}
-          mih={"40rem"}
-          mah={"40rem"}
-        >
-          <Group
-            // justify={"end"}
-            justify="space-between"
-            //  styles={xray}
-          >
+        <Stack gap={20} mih={"40rem"} mah={"40rem"}>
+          <Group justify="space-between">
             <Text size="1.5rem">Title:</Text>
             <TextInput
               size="md"
@@ -158,9 +142,7 @@ export default function Card(props: any) {
               }}
             />
           </Group>
-          <Group
-          // justify="end"
-          >
+          <Group>
             <Group w={"100%"}>
               <Text size="1.5rem">Label:</Text>
               <ColorSwatch w={"5rem"} color={label} />
@@ -179,7 +161,6 @@ export default function Card(props: any) {
           </Group>
           <Group>
             <Text size="1.5rem">Description:</Text>
-            {/* ------------------------------------------------ */}
             <Stack
               onDoubleClick={toggle}
               w={"100%"}
@@ -290,7 +271,6 @@ export default function Card(props: any) {
                 setChangeLog={props.setChangeLog}
               />
             ))}
-            {/* <Subtask isChecked={false} subTitle={"Nice this guy is cool"} /> */}
           </Stack>
 
           <Group pb={20} justify="space-between">
@@ -316,45 +296,50 @@ export default function Card(props: any) {
           </Group>
         </Stack>
       </Modal>
+      {/*----------Card Details Modal----------*/}
     </>
   );
 
+  // Creates a new subtask.
   function handleNewSubtask() {
     const newCardSubtasks = [...cardSubtasks];
     const newChangeLog: changeLogType = { ...props.changeLog };
     const uid = generateID().toString();
+
+    // Adds a new subtask to the subtask list ans adds it to the ChangeLog.
     newCardSubtasks.push({
       subtaskID: `S${uid}`,
       title: newSubtask,
       checked: false,
     });
-
     newChangeLog.subtasks.created.push(uid);
 
-    const completedTasks = newCardSubtasks.filter(
-      (task) => task.checked == true
-    ).length;
-
-    const allTasks = newCardSubtasks.length;
-
-    setPercent((completedTasks / allTasks) * 100);
-
-    setCardSubtasks(newCardSubtasks);
-
+    // Save the ChangeLog to local storage.
     localStorage.setItem(
       `CHL-${props.projectID}`,
       JSON.stringify(newChangeLog)
     );
+
+    // Calculate and update the subtask progress bar percentage.
+    const completedTasks = newCardSubtasks.filter(
+      (task) => task.checked == true
+    ).length;
+    const allTasks = newCardSubtasks.length;
+    setPercent((completedTasks / allTasks) * 100);
+
+    // Updates all necessary changes.
+    setCardSubtasks(newCardSubtasks);
     props.setChangeLog(newChangeLog);
     setNewSubtask("");
   }
 
+  // Runs when the card details modal is closed.
   function handleClose() {
+    // Enables the drag and drop features.
     props.setDisableCardDrag(false);
     props.setDisableListDrag(false);
 
-    console.log("Subtasks:", cardSubtasks);
-
+    // Update the Card information.
     newLists[props.listIndex].cards[props.cardIndex].cardTitle = title;
     newLists[props.listIndex].cards[props.cardIndex].cardLabel = label;
     newLists[props.listIndex].cards[props.cardIndex].cardDescription =
@@ -362,9 +347,11 @@ export default function Card(props: any) {
     newLists[props.listIndex].cards[props.cardIndex].cardSubtasks =
       cardSubtasks;
 
+    // Save the board schema to local storage.
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
-    props.setLists(newLists);
 
+    // Update the necessary states and close the modal.
+    props.setLists(newLists);
     props.setChangeNumber((changeNumber: number) => changeNumber + 1);
     close();
   }

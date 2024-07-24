@@ -1,5 +1,4 @@
 "use client";
-import { forwardRef, useState, useEffect } from "react";
 
 import { Stack, Group, Title, ActionIcon, Paper, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -17,10 +16,6 @@ import AddCardBtn from "./AddCardBtn";
 export default function List(props: any) {
   const [opened, { toggle }] = useDisclosure(false);
   const cards: cardType[] = props.card;
-  // console.log(">>>", props.listIndex);
-
-  // lists={props.lists}
-  // setLists={props.setLists}
 
   return (
     <>

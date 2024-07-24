@@ -7,15 +7,11 @@ import { getCurrentUser } from "aws-amplify/auth";
 import { useEffect } from "react";
 
 Amplify.configure(config);
-export default function Home() {
-  const xray = {
-    root: {
-      outline: "2px solid blue",
-    },
-  };
 
+export default function Home() {
   const router = useRouter();
 
+  // Checks if the current user is authenticated.
   const isAuth = async () => {
     try {
       await getCurrentUser();
@@ -26,12 +22,13 @@ export default function Home() {
     }
   };
 
+  // Runs on first page render.
   useEffect(() => {
     isAuth();
   }, []);
 
   return (
-    <Stack mih={"100vh"} styles={xray} bg={"green.8"}>
+    <Stack mih={"100vh"} bg={"green.8"}>
       <Title ml={"xl"} c={"white"} size={"2.7rem"} order={1}>
         TODO-fy
       </Title>
@@ -55,6 +52,7 @@ export default function Home() {
           Speed up your productivity with TODO-fy! Productivity as never been
           easier
         </Title>
+
         <Group w={"22rem"} justify="space-between" mt={"xl"}>
           <Button
             onClick={() => router.push("/getStarted")}

@@ -1,6 +1,5 @@
 import { Group, Checkbox, Text, CloseButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
 import { subtaskType } from "../utils/todofyTypes";
 import { changeLogType } from "../utils/todofyTypes";
 

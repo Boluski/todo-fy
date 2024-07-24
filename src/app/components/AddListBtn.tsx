@@ -8,7 +8,6 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IoMdAdd } from "react-icons/io";
-import { xray } from "../utils/xray";
 import { listType, changeLogType } from "../utils/todofyTypes";
 import { useState } from "react";
 
@@ -62,6 +61,8 @@ export default function AddListBtn(props: any) {
     const uid = generateID().toString();
     let newChangeLog: changeLogType = { ...props.changeLog };
 
+    // Creates the new List and adds it to the rest of the lists.
+    // And updates the ChangeLog.
     let newLists: listType[] = [
       ...lists,
       {
@@ -80,19 +81,18 @@ export default function AddListBtn(props: any) {
         isEmpty: true,
       },
     ];
-
     newChangeLog.lists.created.push(uid);
 
-    // console.log(newLists);
+    // Save the changes to the local storage.
     localStorage.setItem(props.projectID, JSON.stringify(newLists));
     localStorage.setItem(
       `CHL-${props.projectID}`,
       JSON.stringify(newChangeLog)
     );
 
+    // Update necessary states.
     props.setChangeLog(newChangeLog);
     props.setLists(newLists);
     props.setChangeNumber((count: number) => count + 1);
-    // setListTitle("");
   }
 }
