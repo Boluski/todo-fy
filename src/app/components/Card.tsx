@@ -281,10 +281,13 @@ export default function Card(props: any) {
                 subTitle={subtask.title}
                 isChecked={subtask.checked}
                 // util
+                projectID={props.projectID}
                 cardSubtasks={cardSubtasks}
                 setCardSubtasks={setCardSubtasks}
                 setPercent={setPercent}
                 subtaskIndex={index}
+                changeLog={props.changeLog}
+                setChangeLog={props.setChangeLog}
               />
             ))}
             {/* <Subtask isChecked={false} subTitle={"Nice this guy is cool"} /> */}
@@ -338,6 +341,10 @@ export default function Card(props: any) {
 
     setCardSubtasks(newCardSubtasks);
 
+    localStorage.setItem(
+      `CHL-${props.projectID}`,
+      JSON.stringify(newChangeLog)
+    );
     props.setChangeLog(newChangeLog);
     setNewSubtask("");
   }

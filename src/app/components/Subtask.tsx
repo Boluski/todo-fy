@@ -2,6 +2,7 @@ import { Group, Checkbox, Text, CloseButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { subtaskType } from "../utils/todofyTypes";
+import { changeLogType } from "../utils/todofyTypes";
 
 export default function Subtask(props: any) {
   const [isChecked, { toggle }] = useDisclosure(props.isChecked);
@@ -29,9 +30,46 @@ export default function Subtask(props: any) {
           {props.subTitle}
         </Text>
       </Group>
-      <CloseButton size={"md"} />
+      <CloseButton size={"md"} onClick={handleDeleteSubtask} />
     </Group>
   );
+
+  function handleDeleteSubtask() {
+    const newCardSubtasks: subtaskType[] = [...props.cardSubtasks];
+    const newChangeLog: changeLogType = { ...props.changeLog };
+
+    const uid = (props.subtaskID as string).substring(1);
+
+    const createdAndDeletedIndex = newChangeLog.subtasks.created.findIndex(
+      (created) => created == uid
+    );
+
+    if (createdAndDeletedIndex == -1) {
+      newChangeLog.subtasks.deleted.push(uid);
+    } else {
+      newChangeLog.subtasks.created.splice(createdAndDeletedIndex, 1);
+    }
+
+    console.log("INDEX:", createdAndDeletedIndex);
+
+    newCardSubtasks.splice(props.subtaskIndex, 1);
+
+    localStorage.setItem(
+      `CHL-${props.projectID}`,
+      JSON.stringify(newChangeLog)
+    );
+    props.setChangeLog(newChangeLog);
+
+    const completedTasks = newCardSubtasks.filter(
+      (task) => task.checked == true
+    ).length;
+
+    const allTasks = newCardSubtasks.length;
+
+    props.setPercent((completedTasks / allTasks) * 100);
+
+    props.setCardSubtasks(newCardSubtasks);
+  }
 
   function handleChange() {
     toggle();
