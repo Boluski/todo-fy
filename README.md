@@ -22,3 +22,34 @@
 https://github.com/user-attachments/assets/b2517f71-41c5-4903-8181-5db0ab5341a8
 
 ### How To Use TODO-fy
+
+### Create an account
+
+In order to start using TODO-fy, you have to first create an account.
+
+### Adding lists
+
+Think of lists as buckets where you store tasks or cards.
+
+### Adding cards
+
+A card represents individual task that need be done.
+
+### Card details
+
+There are a couple things you can add to a card to make it more useful to your needs.
+
+> Video Placeholder
+
+You can add labels to cards to show things like urgency and more.
+
+> Video Placeholder
+
+You can add descriptions to cards to make them more descriptive.
+This is very useful if some one else will be using the project.
+
+> Video Placeholder
+
+Lastly, you can add subtasks to a card.
+
+> Video Placeholder
