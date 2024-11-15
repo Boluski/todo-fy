@@ -51,11 +51,11 @@ There are a couple of things you can add to a card to make it more useful to you
 
 You can add labels to cards to show things like urgency and more.
 
-> Video Placeholder
+https://github.com/user-attachments/assets/441dfa7f-76eb-4df1-a9a7-bb7335035157
 
 You can add descriptions to cards to make them more descriptive.
 
-> Video Placeholder
+https://github.com/user-attachments/assets/0e70ef92-de09-4bb1-8008-bfeb5fd3c04c
 
 Lastly, you can add subtasks to a card.
 
