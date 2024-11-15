@@ -33,9 +33,13 @@ https://github.com/user-attachments/assets/993918a4-4585-4219-afc4-133d9beef8a6
 
 Think of lists as buckets where you store tasks or cards.
 
+https://github.com/user-attachments/assets/7dfae258-8b1f-4fa0-aa2d-fc8bf25fb14b
+
 ### Adding cards
 
 A card represents individual tasks that need to be done.
+
+https://github.com/user-attachments/assets/48c29efe-c9cf-436d-b0c2-09652d5c779a
 
 ### Moving lists and cards around
 
