@@ -37,18 +37,19 @@ Think of lists as buckets where you store tasks or cards.
 
 A card represents individual tasks that need to be done.
 
+### Moving lists and cards around
+
+> Video Placeholder
+
 ### Card details
 
 There are a couple of things you can add to a card to make it more useful to your needs.
-
-> Video Placeholder
 
 You can add labels to cards to show things like urgency and more.
 
 > Video Placeholder
 
 You can add descriptions to cards to make them more descriptive.
-This would be very useful if someone else used the project.
 
 > Video Placeholder
 
