@@ -93,7 +93,6 @@ export default function Project({ params }: { params: { id: string } }) {
     }
 
     try {
-      // console.log(projectID);
       const { username } = await getCurrentUser();
 
       const request = get({
@@ -108,16 +107,15 @@ export default function Project({ params }: { params: { id: string } }) {
       const response = (await body.json()) as sqlData;
 
       if (response.isError) {
+        console.log(response.errorMes);
+
         throw new TypeError(response.errorMes);
       }
 
-      const owner = response.result[0].owner;
+      const owner = response.result[0].owner.toLowerCase();
       console.log(response.result);
 
       if (owner == username) {
-        // console.log(owner);
-        // console.log(username);
-
         setProjectName(response.result[0].title);
         setMainTheme(response.result[0].main);
         setSecondaryTheme(response.result[0].secondary);
@@ -150,14 +148,12 @@ export default function Project({ params }: { params: { id: string } }) {
 
         setLists(board);
         toggle();
-
         console.log("user is authorized");
       } else {
         throw new TypeError("User is not authorized");
       }
     } catch (error) {
       router.push("/dashboard");
-      // console.log(error.message);
     }
   };
 
