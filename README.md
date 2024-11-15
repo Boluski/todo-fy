@@ -59,4 +59,4 @@ https://github.com/user-attachments/assets/0e70ef92-de09-4bb1-8008-bfeb5fd3c04c
 
 Lastly, you can add subtasks to a card.
 
-> Video Placeholder
+https://github.com/user-attachments/assets/0ca744d5-1ea1-4dcc-a3c4-444377ddd9d7
