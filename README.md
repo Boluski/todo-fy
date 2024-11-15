@@ -43,7 +43,7 @@ https://github.com/user-attachments/assets/48c29efe-c9cf-436d-b0c2-09652d5c779a
 
 ### Moving lists and cards around
 
-> Video Placeholder
+https://github.com/user-attachments/assets/c5d21e1d-6780-4ac9-b99a-e26e7b65ef55
 
 ### Card details
 
